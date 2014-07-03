@@ -1,0 +1,48 @@
+// robin.feng@tech-sonic.net
+// 2014.7.3
+windowevent itemchange scraptag
+
+// TODO: define the scrap order wip variance account
+setvar=scrap_acct_wip_var=5111100000
+
+if <dw_1.item.scraptag.value> = 'Y' then
+dw_1.item.account_variance.value=<scrap_acct_wip_var>
+end if
+if <dw_1.item.scraptag.value> = 'N' then
+// WIP-Konto der Baugruppe
+sbodiapi=getaccount=typ=wipacct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
+setitem=account_wip=<value>
+select case when isnull(u_beas_wip,'N') in ('J','Y','T','1') then 'Y' else 'N'  end from oact where acctcode='<account_wip>'
+if <wert1> <> Y then
+   messagebox=fehler$ftposstd02355$Das angegebene WIA-Konto ist nicht als WIA-Konto definiert! Bitte Datenprüfung starten und korrigieren!
+end if
+// WIP-Difference der Baugruppe
+sbodiapi=getaccount=typ=wipvaracct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
+setitem=account_variance=<value>
+end if
+end event
+
+//windowevent itemchange itemcode
+//// binding the db field to form field
+//update beas_ftpos set acc_wip_var_bak=account_variance &
+//  where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
+//end event
+
+// create a scrap tag for scrap order
+// define the position of the field in this form
+windowevent open
+setvar=ll_x=<item.startzeit_struktur.x>
+setvar=ll_y=<item.startzeit_struktur.y>
+
+create=text=x=3100,y=<ll_y>,width=700,text=Scrap order
+create=checkbox=x=3400,y=<ll_y>,id=userfield1,name=scraptag,tab=41
+select scraptag into scraptag from beas_ftpos &
+  where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
+end event
+
+// update database to "scraptag"
+windowevent update
+sql=update beas_ftpos set scraptag='<dw_1.item.scraptag.value>' &
+  where belnr_id=<str_parm.belnr_id,#0> &
+  and belpos_id=<str_parm.belpos_id,#0>
+end event
