@@ -1,0 +1,3 @@
+spr_id,addon,nr,von,zu,quelltext
+CH  ,NULL,beas_wo_001,,成品已经收货，不能报废此工作令。,
+E   ,NULL,beas_wo_001,,"The finish goods was receipted, can not scrap this work order.",NULL

@@ -1,0 +1,48 @@
+// robin.feng@tech-sonic.net
+// 2014.7.4
+windowevent itemchange barcode
+// Disable the "resource" field
+item.aplatz_id=protect=1
+item.aplatz_id_p=protect=1
+item.aplatz_id_p.visible=0
+// Disable the "cost element" field
+item.timetype_id=protect=1
+item.timetype_id_p.visible=0
+// Add dropdown list to "serial number" field
+item.udf1.dropdown.activate
+item.udf1.edit.update=no
+item.udf1.dropdown.select item from beas_ftpos_reservierung &
+  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0>
+
+// Control "time type" field, 
+// check the setup time and process time in routing:
+// If setup time larger than zero, then "time type" equal "setup" 
+sql=select "TRAPlatz", "TEAPlatz" into setuptime:#0.000, processtime:#0.000 from beas_ftapl &
+  where nummer=<dw_1.item.barcode.value,#0>
+
+if <setuptime> n> 0 then
+setitem=typ=R
+else
+setitem=typ=A
+end if
+
+// Update "cost element" by "time type"
+setvar=wert1=
+if <typ> = H then
+  select "thtimetype_id" into timetype_id from "BEAS_FTAPL" &
+    where "nummer"=<dw_1.item.barcode.value,#0>
+end if
+if <typ> = N then
+  select "tntimetype_id" into timetype_id from "BEAS_FTAPL" &
+    where "nummer"=<dw_1.item.barcode.value,#0>
+end if
+if <typ> = R then
+  select "trtimetype_id" into timetype_id from "BEAS_FTAPL" &
+    where "nummer"=<dw_1.item.barcode.value,#0>
+end if
+if <typ> = A or <typ> = E  then
+  select "timetype_id" into timetype_id from "BEAS_FTAPL" &
+    where "nummer"=<dw_1.item.barcode.value,#0>
+end if
+menu=redraw
+end event
