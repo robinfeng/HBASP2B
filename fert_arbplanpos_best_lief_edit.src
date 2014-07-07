@@ -1,0 +1,45 @@
+﻿// robin.feng@tech-sonic.net
+// 2014.7.7
+windowevent postopen
+create=button=name=createspo,menutext=Create Service PO,text=Create Service PO
+menu=disable=best:
+visible=vatgroup=1
+end event
+
+windowevent click createspo
+declare vdoc=ue_api_sbo
+vdoc=getbusinessobject=opor
+vdoc=doctype=1
+vdoc=docduedate=<today>
+vdoc=salespersoncode=3
+vdoc=numatcard=U113001
+vdoc=cardcode=V000048
+vdoc=doccurrency=cny
+vdoc=address=CN
+vdoc=address2=US
+
+//vdoc=lines=cogscostingcode=50990501
+vdoc=lines=costingcode=50990501
+vdoc=lines=accountcode=1012000001
+vdoc=lines=vatgroup=J2
+vdoc=lines=shipdate=2006/08/01
+//vdoc=lines=price=10
+vdoc=lines=u_belnrid=2
+vdoc=lines=u_belposid=190
+vdoc=lines=u_posid=30
+vdoc=lines=freetext=000002190030
+vdoc=lines=salespersoncode=3
+vdoc=lines=itemdescription=line desc
+vdoc=lines=currency=cny
+vdoc=lines=linetotal=98
+vdoc=add
+destroy vdoc
+
+if <value> = 1 then
+  message=info$$ok
+else
+  message=error$$ng
+  return false
+end if
+
+end event
