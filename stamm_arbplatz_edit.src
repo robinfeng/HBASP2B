@@ -1,0 +1,20 @@
+// robin.feng@tech-sonic.net
+// 2014.7.5
+// Add serial number tag
+windowevent open
+setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
+setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>
+
+//messagebox=<ll_x><cr_lf><ll_y>
+create=text=x=25,y=1150,width=700,text=Serial Number,tab=30
+create=checkbox=x=955,y=1150,id=userfield1,name=serialnumtag,tab=31
+select scraptag into scraptag from beas_ftpos &
+  where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
+select serialnumtag into serialnumtag from beas_aplatz &
+  where aplatz_id=N'<str_parm.s_parm1>'
+end event
+
+windowevent update
+sql=update beas_aplatz set serialnumtag='<dw_1.item.serialnumtag.value>' &
+  where aplatz_id=N'<str_parm.s_parm1>'
+end event
