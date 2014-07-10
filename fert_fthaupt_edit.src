@@ -1,0 +1,3 @@
+﻿windowevent postopen
+protect=udf1=1
+end event

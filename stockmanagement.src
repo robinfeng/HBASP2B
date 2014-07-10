@@ -1,0 +1,20 @@
+﻿// robin.feng@tech-sonic.net
+// Reserve serial numbers of the work order position
+function serialnumcreater
+// Input "stockmanagement:serialnumcreater()" to
+// Configuration wizard > Production > Valuation and booking of assembly > Serial Number > Form to create (xxx=sequential No)
+// Example S/N: H14-AAE-001
+// Note: Don't support over 999 per work order.
+  if <e_type> <> receiptWO then
+    select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
+    setvar=bns=H<today,yy>-<wert1>
+	setvar=sn_counter=%numadd(<wert2>,1)	
+	setvar=sn_counter=000<sn_counter>
+  
+  select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+
+  setstr=s_parm1=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
+  update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
+  end if
+  return success
+end function
