@@ -4,16 +4,25 @@ if <len_udf1> n= 0 then
 message=error$$The serial number is mandatory
 return false
 end if
+
 setvar=wert1=
 select U_sn_udf from [@zqsrn] where code=N'<dw_1.item.qs_id.value>'
 setvar=sn_udf=<wert1>
 select count(1) from CUFD where TableID='osrn' and AliasID=N'<wert1>'
 if <wert1> n= 1 then
 select itemcode from beas_qsfthaupt where charge_id=N'<parent.dw_1.item.charge_id.value>'
+
+if <messwertc> = then
 #sqlscript
-update osrn set u_<sn_udf>=<messwertc> 
+update osrn set u_<sn_udf>=NULL
 where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
 #end
+else
+#sqlscript
+update osrn set u_<sn_udf>=<messwertc>
+where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
+#end
+end if
 message=info$beas_qc_1003$The <dw_1.item.qs_id.value> of S/N(<parent.dw_1.item.udf1.value>) updated.
 end if
 end event
