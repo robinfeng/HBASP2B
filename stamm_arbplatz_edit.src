@@ -1,6 +1,6 @@
+// Add serial number tag
 // robin.feng@tech-sonic.net
 // 2014.7.5
-// Add serial number tag
 windowevent open
 setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
 setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>

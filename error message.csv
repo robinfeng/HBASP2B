@@ -2,6 +2,12 @@ spr_id,addon,nr,von,zu,quelltext
 CH  ,NULL,beas_wo_1001,,成品已经收货，不能报废此工作令。,
 CH  ,NULL,beas_tr_1001,,该资源的工时反馈必须记录序列号，请输入序列号,
 CH  ,NULL,beas_tr_1002,,序列号输入错误，不在工作令现有的预留序列号列表中,
-E   ,NULL,beas_wo_1001,,"The finish goods was receipted, can not scrap this work order.",NULL
+CH  ,NULL,beas_qc_1001,,序列号输入错误，不在对应的采购收货序列号(OSRN)列表中,
+CH  ,NULL,beas_qc_1002,,序列号输入正确,
+CH  ,NULL,beas_qc_1003,,序列号(<parent.dw_1.item.udf1.value>)的<dw_1.item.qs_id.value>已经更新,
+E   ,NULL,beas_wo_1001,,"The finish goods was receipted, can not scrap this work order.",
 E   ,NULL,beas_tr_1001,,"The resource have to record serial number in time receipt, please input Serial Number",
 E   ,NULL,beas_tr_1002,,"The Serial Number is error, can't find the s/n in current work order s/n reservation list.",
+E   ,NULL,beas_qc_1001,,"The Serial Number is error, can't find in goods receipt serial number list(OSRN)",
+E   ,NULL,beas_qc_1002,,The input Serial Number is ok.,
+E   ,NULL,beas_qc_1003,,The <dw_1.item.qs_id.value> of S/N(<parent.dw_1.item.udf1.value>) updated.,

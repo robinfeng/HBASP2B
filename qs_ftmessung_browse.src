@@ -1,0 +1,61 @@
+﻿// Set the udf1 is visible, and name it SerialNumber.
+// Only serial number item visible.
+// robin.feng@tech-sonic.net
+windowevent postopen
+[automaticscript]
+dw_1.item.udf1_t.formatstring=text=SerialNumber,
+[/automaticscript]
+select mansernum from oitm &
+  where itemcode=N'<parent.dw_1.item.itemcode.value>'
+if <wert1> = Y then
+visible=udf1=1
+protect=udf1=0
+else
+visible=udf1=0
+protect=udf1=1
+end if
+
+visible=distnumber=0
+protect=distnumber=1
+end event
+
+// Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
+windowevent itemchange udf1
+setvar=l_udf=<dw_1.item.udf1.value>
+//messagebox=<dw_1.item.knd_id.value><cr_lf>
+if <dw_1.item.pruefkz.value> = F then
+message=error$$Only Open status line can be modify.
+setitem=udf1=<l_udf>
+reutrn false
+end if
+
+// If goods receipt an item with serial number management
+setvar=wert1=
+select mansernum from oitm &
+  where itemcode=N'<parent.dw_1.item.itemcode.value>'
+
+//message=<parent.dw_1.item.typ.value><cr_lf><wert1>
+if <parent.dw_1.item.typ.value> = W and <wert1> = Y then
+select basedocentry, baselinenum from beas_qsfthaupt &
+  where basetype=20 and charge_id=N'<dw_1.item.charge_id.value>'
+setvar=grpo_docentry=<wert1>
+setvar=grpo_linnum=<wert2>
+
+select logentry from oitl where doctype=20 and docentry=<grpo_docentry> and docline=<grpo_linnum>
+setvar=logentry=<wert1>
+//message=<logentry>
+declare=ds_sn=ue_datastorevalues
+ds_sn=select * from itl1 where logentry=<logentry>
+
+for=loop=1=<ds_sn.rowcount>
+ds_sn.setrow=<loop>
+select distnumber from osrn where itemcode=N'<parent.dw_1.item.itemcode.value>' and sysnumber=<ds_sn.sysnumber.value>
+//messagebox=<dw_1.item.udf1.value,trim><cr_lf><wert1,trim>
+if <dw_1.item.udf1.value,trim> = <wert1,trim> then
+message=info$beas_qc_1002$The entried Serial Number is ok.
+return true
+end if
+next
+message=error$beas_qc_1001$The Serial Number is error, can't find in goods receipt serial number list(OSRN)
+end if
+end event

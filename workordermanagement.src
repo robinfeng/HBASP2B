@@ -1,14 +1,16 @@
 ﻿// robin.feng@tech-sonic.net
 // Add the LOT number to work order from user define table [@zdsr1]
+// @ZDSRN, Serial Number’s LOT number Master，ObjectType: Master Data
+// @ZDSR1, Serial Number’s LOT number Detail，ObjectType: Master Data Rows
 function createbelnrid
 select Top 1 U_LOT from [@zdsr1] &
-where U_Year='<today,yyyy>' and ISNULL(u_used,'N')='N' &
+where code='<today,yyyy>' and ISNULL(u_used,'N')='N' &
 order by u_lot
 
 setitem=udf1=<wert1>
 
 update [@zdsr1] set U_Used='Y' &
-where U_Year='<today,yyyy>' and U_LOT='<udf1>'
+where code='<today,yyyy>' and isnull(U_LOT,'N')='<udf1>'
 end function
 
 // Update work order's S/N counter, when delete work order position

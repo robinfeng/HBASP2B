@@ -1,3 +1,4 @@
+﻿// Add scrap order tag to work order position
 // robin.feng@tech-sonic.net
 // 2014.7.3
 windowevent itemchange scraptag
@@ -12,7 +13,7 @@ dw_1.item.account_variance.value=<scrap_acct_wip_var>
 end if
 
 if <dw_1.item.scraptag.value> = 'Y' and <complete_quantity> n<> 0 then
-message=error$beas_wo_001$The finish goods was receipted, can not scrap this work order.
+message=error$wo_1001$成品已经收货，不能执行报废作业。
 setitem=scraptag='N'
 return false
 end if
