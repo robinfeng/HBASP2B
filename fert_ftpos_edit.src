@@ -4,7 +4,9 @@
 windowevent itemchange scraptag
 
 // TODO: define the scrap order wip variance account
-setvar=scrap_acct_wip_var=5111100000
+select u_parameter1 from [@zc001] where u_variablename=N'Z_SCRAP_Account'
+
+setvar=scrap_acct_wip_var=<wert1>
 select gel_menge * isnull(me_umr,1) from beas_ftpos &
   where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
 setvar=complete_quantity=<wert1>

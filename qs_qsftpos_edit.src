@@ -1,4 +1,7 @@
-﻿windowevent itemchange messwertc
+﻿// Update UDF of serial number from qc order position
+// robin.feng@tech-sonic.net
+// 2014.7.11
+windowevent itemchange messwertc
 setvar=len_udf1=%len(<parent.dw_1.item.udf1.value>)
 if <len_udf1> n= 0 then
 message=error$$The serial number is mandatory
@@ -19,7 +22,7 @@ where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
 #end
 else
 #sqlscript
-update osrn set u_<sn_udf>=<messwertc>
+update osrn set u_<sn_udf>=<messwertc,#0.000000>
 where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
 #end
 end if

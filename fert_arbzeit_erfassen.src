@@ -1,3 +1,4 @@
+// Time receipt customise
 // robin.feng@tech-sonic.net
 // 2014.7.4
 windowevent itemchange barcode
@@ -10,7 +11,7 @@ item.timetype_id=protect=1
 item.timetype_id_p.visible=0
 // Add dropdown list to "serial number" field
 item.udf1.dropdown.activate
-item.udf1.edit.update=no
+//item.udf1.edit.update=no
 
 // Control "time type" field, 
 // check the setup time and process time in routing:
@@ -42,6 +43,7 @@ if <typ> = A or <typ> = E  then
   select "timetype_id" into timetype_id from "BEAS_FTAPL" &
     where "nummer"=<dw_1.item.barcode.value,#0>
 end if
+setitem=udf1=
 menu=redraw
 end event
 
@@ -73,7 +75,6 @@ if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
 message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
 return false
 end if
-setitem=udf1=
 end event
 
 // When click confirm completion button
@@ -98,5 +99,4 @@ if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
 message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
 return false
 end if
-setitem=udf1=
 end event
