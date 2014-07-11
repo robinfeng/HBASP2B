@@ -21,13 +21,15 @@ end event
 
 // Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
 windowevent itemchange udf1
-
+// If the sample is not open, then can't update the udf1(Serial Number) field
+select isnull(udf1,'') from beas_qsftmessung &
+  where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id.value>'
 //messagebox=<dw_1.item.pruefkz:[dwo-row].value>
-setvar=l_udf=<dw_1.item.udf1.value>
+setvar=l_udf1=<wert1>
 //messagebox=<dw_1.item.knd_id.value><cr_lf>
-if <dw_1.item.pruefkz.value> = F then
-message=error$$Only Open status line can be modify.
-setitem=udf1=<l_udf>
+if <dw_1.item.pruefkz.value> <>  then
+message=error$beas_qc_1005$The input Serial Number is error, the sample status is unlocked.
+setitem=udf1=<l_udf1>
 reutrn false
 end if
 
