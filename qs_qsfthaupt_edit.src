@@ -1,0 +1,24 @@
+﻿// Coding ID: beas_qs_qsfthaupt_edit_postopen
+// By: robin.feng@tech-sonic.net
+// Date: 20140725
+// Description: If the item is by serial management, 
+// then have to input by piece, can't input by test.
+
+windowevent postopen
+select mansernum from oitm where itemcode=N'<dw_1.item.itemcode.value>'
+if <wert1> = Y then
+tab=protect=4=1
+end if
+
+// If the orgin document is grpo and the vendor is consiment vendor,
+// then set the receipt warehouse to PO line's warehouse,
+// and the warehouse is read only.
+if <dw_1.item.basetype.value> n= 20 then
+select whscode from owhs where u_D_ConsiVendor=N'<dw_1.item.cardcode.value>'
+if <wert1> <>  then
+item.gutwhscode.value=<wert1>
+item.gutwhscode=protect=1
+item.gutwhscode_p=protect=1
+item.gutwhscode_p.visible=0
+end if
+end event

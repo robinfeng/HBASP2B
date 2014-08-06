@@ -5,16 +5,67 @@ function serialnumcreater
 // Configuration wizard > Production > Valuation and booking of assembly > Serial Number > Form to create (xxx=sequential No)
 // Example S/N: H14-AAE-001
 // Note: Don't support over 999 per work order.
-  if <e_type> <> receiptWO then
-    select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
-    setvar=bns=H<today,yy>-<wert1>
-	setvar=sn_counter=%numadd(<wert2>,1)	
-	setvar=sn_counter=000<sn_counter>
-  
-  select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+if <e_type> <> receiptWO then
+select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
+setvar=bns=H<today,yy>-<wert1>
+setvar=sn_counter=%numadd(<wert2>,1)	
+setvar=sn_counter=000<sn_counter>
 
-  setstr=s_parm1=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
-  update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
-  end if
-  return success
+select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+
+setstr=s_parm1=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
+update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
+end if
+return success
 end function
+
+
+function issueend
+if <e_type> = issuewo then
+
+select top 1&
+case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'ibt1_batchnum' &
+,oitm.itemcode+'' as 'ibt1_itemcode' &
+,oitm.itemname+'' as 'oitm_itemname' &
+,oitm.mansernum+'' as mansernum &
+,oitm.manbtchnum+'' as manbtchnum &
+,itl1.quantity as 'ibt1_quantity' &
+, ige1.u_posid+0 as ign1_u_posid &
+from ige1  &
+inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ige1.U_belnrid = serial.belnr_id  &
+and ige1.U_belposid = serial.belpos_id and serial.pos_id = ige1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ige1.U_belnrid = batch.belnr_id  &
+and ige1.U_belposid = batch.belpos_id and batch.pos_id = ige1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ige1.u_belnrid=<e_belnr_id> and ige1.u_belposid=<e_belpos_id> &
+and oitm.itemcode=N'<e_itemcode>' and oitm.ManSerNum='Y' &
+order by ige1.u_belnrid, ige1.u_belposid, itl1.SysNumber desc
+
+//messagebox=<e_belnr_id><cr_lf><e_belpos_id><cr_lf><e_itemcode><cr_lf><wert1>
+// By raw material reserve S/N
+//sql=insert into beas_ftpos_reservierung (belnr_id,belpos_id,item,quantity,openqty) &
+//values (<e_belnr_id>,<e_belpos_id>,'<wert1>',1,1)
+
+// By work order reserve S/N
+select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
+setvar=bns=H<today,yy>-<wert1>
+setvar=sn_counter=%numadd(<wert2>,1)	
+setvar=sn_counter=000<sn_counter>
+
+select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+
+setvar=sn=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
+update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
+sql=insert into beas_ftpos_reservierung (belnr_id,belpos_id,item,quantity,openqty) &
+values (<e_belnr_id>,<e_belpos_id>,'<sn>',1,1)
+//messagebox=<value>
+end if
+end

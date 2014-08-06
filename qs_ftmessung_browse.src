@@ -1,6 +1,8 @@
-﻿// Set the udf1 is visible, and name it SerialNumber.
+﻿// Coding ID: beas_qs_ftmessung_browse_postopen
+// By: robin.feng@tech-sonic.net
+// Date: 20140725
+// Description: Set the udf1 is visible, and name it SerialNumber.
 // Only serial number item visible.
-// robin.feng@tech-sonic.net
 windowevent postopen
 [automaticscript]
 dw_1.item.udf1_t.formatstring=text=SerialNumber,
@@ -17,11 +19,22 @@ end if
 
 visible=distnumber=0
 protect=distnumber=1
+//create=button=name=del_no_sn,menutext=Del no S/N Sample,text=Del no S/N Sample
+
 end event
 
-// Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
+//windowevent click del_no_sn
+//sql=delete from beas_qsftmessung where charge_id=N'<str_parm.s_parm1>' and isnull(udf1,'')=''
+//sql=delete from beas_qsftpos where charge_id=N'<str_parm.s_parm1>' and isnull(udf1,'')=''
+//retrieve
+//end event
+
+// Coding ID: beas_qs_ftmessung_browse_itemchange_udf1
+// By: robin.feng@tech-sonic.net
+// Date: 20140725
+// Description: Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
 windowevent itemchange udf1
-// If the sample is not open, then can't update the udf1(Serial Number) field
+// If the sample unlocked, then can't update the udf1(Serial Number) field
 select isnull(udf1,'') from beas_qsftmessung &
   where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id.value>'
 //messagebox=<dw_1.item.pruefkz:[dwo-row].value>

@@ -1,37 +1,84 @@
-﻿// robin.feng@tech-sonic.net
+﻿// Rewrite the Create Service PO function
+// robin.feng@tech-sonic.net
 // 2014.7.7
 windowevent postopen
+select timetype_id from beas_ftapl &
+  where belnr_id=<str_parm.belnr_id,#0> &
+  and belpos_id=<str_parm.belpos_id,#0> &
+  and pos_id=<str_parm.pos_id,#0>
+setvar=ftimetype=<wert1>
+
+select account_vk_from from beas_timetype &
+  where timetype_id=N'<ftimetype>'
+setitem=sachkto=<wert1>
+
 create=button=name=createspo,menutext=Create Service PO,text=Create Service PO
 menu=disable=best:
-visible=vatgroup=1
+//visible=vatgroup=1
+//visible=btext3=1
+item.btext1.dropdown.activate
+item.btext1.dropdown.select prccode,prcname from oprc where active='Y' and validfrom<getdate()
+
+item.btext2.dropdown.activate
+item.btext2.dropdown.select slpcode,slpname from oslp
+setitem=btext1=
+setitem=btext2=
+
+// Get currency of the vendor
+// The priority of currency is:
+//  a) The currency of the operation sequence
+//  b) The currency of the BP
+select fag_currency from beas_ftapl &
+  where belnr_id=<str_parm.belnr_id,#0> &
+  and belpos_id=<str_parm.belpos_id,#0> &
+  and pos_id=<str_parm.pos_id,#0>
+setvar=op_currency=<wert1>
+
+select currency from ocrd where cardcode=N'<dw_1.item.lieferant.value>'
+setvar=bp_currency=<wert1>
+
+setvar=len_curr=%len(<op_currency>)
+//messagebox=<op_currency><cr_lf><bp_currency><cr_lf><len_curr>
+if <len_curr> n= 0 then
+  setitem=currency=<bp_currency>
+  setitem=localcurr=<bp_currency>
+else
+  setitem=currency=<op_currency>
+  setitem=localcurr=<op_currency>
+end if
+
+// Get vat of the vendor
+select ecvatgroup from ocrd where cardcode=N'<dw_1.item.lieferant.value>'
+setitem=vatgroup=<wert1>
 end event
 
+// Create purchase order
 windowevent click createspo
 declare vdoc=ue_api_sbo
 vdoc=getbusinessobject=opor
 vdoc=doctype=1
-vdoc=docduedate=<today>
-vdoc=salespersoncode=3
-vdoc=numatcard=U113001
-vdoc=cardcode=V000048
-vdoc=doccurrency=cny
-vdoc=address=CN
-vdoc=address2=US
+vdoc=docdate=<today>
+vdoc=docduedate=<dw_1.item.lieferdatum.value,yyyy/mm/dd>
+vdoc=salespersoncode=<dw_1.item.btext2.value>
+//vdoc=numatcard=<dw_1.item.btext3.value>
+vdoc=cardcode=<dw_1.item.lieferant.value>
+vdoc=doccurrency=<currency>
+vdoc=address2=<dw_1.item.address2.value>
 
 //vdoc=lines=cogscostingcode=50990501
-vdoc=lines=costingcode=50990501
-vdoc=lines=accountcode=1012000001
-vdoc=lines=vatgroup=J2
-vdoc=lines=shipdate=2006/08/01
+vdoc=lines=costingcode=<dw_1.item.btext1.value>
+vdoc=lines=accountcode=<dw_1.item.sachkto.value>
+vdoc=lines=vatgroup=<dw_1.item.vatgroup.value>
+vdoc=lines=shipdate=<dw_1.item.lieferdatum.value,yyyy/mm/dd>
 //vdoc=lines=price=10
-vdoc=lines=u_belnrid=2
-vdoc=lines=u_belposid=190
-vdoc=lines=u_posid=30
+vdoc=lines=u_belnrid=<str_parm.belnr_id,#0>
+vdoc=lines=u_belposid=<str_parm.belpos_id,#0>
+vdoc=lines=u_posid=<str_parm.pos_id,#0>
 vdoc=lines=freetext=000002190030
-vdoc=lines=salespersoncode=3
-vdoc=lines=itemdescription=line desc
-vdoc=lines=currency=cny
-vdoc=lines=linetotal=98
+vdoc=lines=salespersoncode=<dw_1.item.btext2.value>
+vdoc=lines=itemdescription=<dw_1.item.btext3.value>
+vdoc=lines=currency=<currency>
+vdoc=lines=linetotal=<dw_1.item.preis.value,#0.0000>
 vdoc=add
 destroy vdoc
 
@@ -42,4 +89,34 @@ else
   return false
 end if
 
+end event
+
+// Change the vendor
+windowevent itemchange lieferant
+// Get currency of the vendor
+// The priority of currency is:
+//  a) The currency of the operation sequence
+//  b) The currency of the BP
+select fag_currency from beas_ftapl &
+  where belnr_id=<str_parm.belnr_id,#0> &
+  and belpos_id=<str_parm.belpos_id,#0> &
+  and pos_id=<str_parm.pos_id,#0>
+setvar=op_currency=<wert1>
+
+select currency from ocrd where cardcode=N'<dw_1.item.lieferant.value>'
+setvar=bp_currency=<wert1>
+
+setvar=len_curr=%len(<op_currency>)
+//messagebox=<op_currency><cr_lf><bp_currency><cr_lf><len_curr>
+if <len_curr> n= 0 then
+  setitem=currency=<bp_currency>
+  setitem=localcurr=<bp_currency>
+else
+  setitem=currency=<op_currency>
+  setitem=localcurr=<op_currency>
+end if
+
+// Get vat of the vendor
+select ecvatgroup from ocrd where cardcode=N'<dw_1.item.lieferant.value>'
+setitem=vatgroup=<wert1>
 end event

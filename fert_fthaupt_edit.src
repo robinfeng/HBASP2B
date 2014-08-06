@@ -1,3 +1,4 @@
-﻿windowevent postopen
+﻿// The LOT number used by serial number of finish goods
+windowevent postopen
 protect=udf1=1
 end event

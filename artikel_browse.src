@@ -1,0 +1,12 @@
+﻿windowevent doubleclick
+
+   if <dw_1.item.oitb_itmsgrpnam.value> = BulkExpense then
+       messagebox=<dw_1.item.oitb_itmsgrpnam.value> can not maintain in this screen
+       return failure
+   end if
+
+   if <dw_1.item.oitb_itmsgrpnam.value> = Project item then
+       messagebox=<dw_1.item.oitb_itmsgrpnam.value> can not maintain in this screen
+       return failure
+
+end event

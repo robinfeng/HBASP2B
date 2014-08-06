@@ -1,0 +1,10 @@
+﻿windowevent doubleclick 
+
+ setvar=wert1   
+ select oitm.ItmsGrpCod from OITM where ItemCode='<dw_1.item.itemcode.value>'
+   if <wert1> = '110' or <wert1> = '108' then
+      messagebox=<dw_1.item.itemcode.value>-<dw_1.item.itemname.value> cannot maintain in this screen
+  return failure
+ end if 
+
+end event

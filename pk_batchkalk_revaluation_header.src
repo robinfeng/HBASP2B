@@ -1,0 +1,55 @@
+﻿// Coding ID: beas_pk_batchkalk_revaluation_header_postopen
+// By: robin.feng@tech-sonic.net
+// Date: 20140725
+// Description: Add Select all & unselect all button
+
+windowevent postopen
+//item.reference2.dropdown.activate
+//item.reference2.dropdown.select whscode,whsname from owhs
+
+create=button=name=filter,menutext=Filter Warehouse,text=Filter Warehouse
+//create=button=name=selectall,menutext=Select All,text=Select All
+//create=button=name=unselectall,menutext=Unselect All,text=Unselect All
+end event
+
+windowevent click filter
+//dw_2.setfilter=whscode='<dw_1.item.reference2.value>'
+//dw_2.filter
+
+for=loop=1=<dw_2.rowcount>
+setrow=<loop>
+
+if <dw_2.item.whscode:[loop].value> = 910 then
+dw_2.item.ok:[loop].value=0
+dw_2.item.newprice:[loop].value=0
+end if
+next
+end event
+
+//
+//windowevent click selectall
+//for=loop=1=<dw_2.rowcount>
+//setrow=<loop>
+//
+//if <dw_2.item.newprice:[loop].value> n> 0 then
+//dw_2.item.ok:[loop].value=1
+//else
+//dw_2.item.ok:[loop].value=0
+//end if
+//
+//next
+//end event
+//
+//windowevent click unselectall
+//for=loop=1=<dw_2.rowcount>
+//setrow=<loop>
+//
+//dw_2.item.ok:[loop].value=0
+//
+//next
+//end event
+//
+//windowevent itemchange reference2
+//dw_2.setfilter=whscode='<dw_1.item.reference2.value>'
+//dw_2.filter
+//end event

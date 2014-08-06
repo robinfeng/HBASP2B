@@ -1,0 +1,154 @@
+﻿windowevent postopen
+//protect=u_match=1
+protect=itmsgrpcod=1
+protect=itemtype=1
+//get currenct user code
+setvar=cuser=<currentuser>
+
+//select currenct user general tab right, if no right this tab will be disable.
+setvar=wert1
+//if current user have no right to open item master window, an error message will be show 
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>'
+if <wert1> n= 0 then
+     messagebox=**$ <cuser>,you have no right to open item master data window the screen will be close!
+     post=close:cancel
+else
+//select currenct user general tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='01'
+if <wert1> n= 0 then
+    etab=visible=stamm=return false
+end if
+//select currenct user purchasing data tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='02'
+if <wert1> n= 0 then
+    etab=visible=buy=return false
+end if
+//select currenct user sales data tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='03'
+if <wert1> n= 0 then
+    etab=visible=sale=return false
+end if
+//select currenct user inventory data tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='04'
+if <wert1> n= 0 then
+    etab=visible=warehouse=return false
+end if
+//select currenct user batch tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='05'
+if <wert1> n= 0 then
+    etab=visible=batchnum=return false
+end if
+//select currenct user planning data tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='06'
+if <wert1> n= 0 then
+    etab=visible=planning=return false
+end if
+//select currenct user QC inspection plan tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='07'
+if <wert1> n= 0 then
+    etab=visible=qs=return false
+end if
+//select currenct user Bill of Material tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='08'
+if <wert1> n= 0 then
+    tab=protect=2=1
+end if
+//select currenct user routing tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='09'
+if <wert1> n= 0 then
+    tab=protect=3=1
+end if
+//select currenct user UDFs to MM tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='10'
+if <wert1> n> 0 then
+    tab=add=UDFs to MM=tab_mm.psr
+end if
+
+//select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='11'
+//if <wert1> n> 0 then
+//    tab=add=UDFs to MM=tab_fi.psr
+//end if
+//disable configurator tab/
+
+tab=protect=5=1
+
+end if
+
+end event
+
+
+windowevent open
+ // expense / capital project item group cannot edit at this screen.
+   if <dw_1.item.itmsgrpcod.value> n= 110 then 
+      messagebox=**$This item can NOT maintain in this screen
+      post=close:cancel
+   end if
+
+   if <dw_1.item.itmsgrpcod.value> n= 108 then 
+      messagebox=**$This item can NOT maintain in this screen
+      post=close:cancel
+   end if
+
+[automaticscript]
+dw_1.item.sww_t.formatstring=text=Buyer,
+[/automaticscript]
+end event
+
+
+windowevent update
+
+//	Row material / Semi-productor / Finished Goods cost should great than 0							
+select count(*) from OITM t0 inner join OITB t1 on t0.ItmsGrpCod =t1.ItmsGrpCod where t0.ItemCode='<dw_1.item.itemcode.value>' and t1.U_m_zc='N'
+if <wert1> n> 0 then
+     if <dw_1.item.avgprice.value> n= 0  and <dw_1.item.frozenfor.value> <> 'Y'  then  
+				messagebox=**$This item cost must great than 0, else it will be block in Transaction document
+
+     end if 
+end if 
+
+
+if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and <dw_1.item.frozenfor.value> <> 'Y' then
+    messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
+    return false
+end if
+
+
+end event
+
+windowevent itemchange evalsystem
+			messagebox=error$The Standard evaluation only
+         setitem=evalsystem=S
+         return true
+         dw_1.item.evalsystem.redraw
+end event
+
+windowevent itemchange invntitem		
+
+    if <dw_1.item.itmsgrpcod.value> n= 101 then   
+         setitem=serbatchtyp=B
+         setitem=manbtchnum=Y
+         setitem=mansernum=N
+			return true
+         dw_1.item.serbatchtyp.redraw
+			dw_1.item.manbtchnum.redraw
+         dw_1.item.mansernum.redraw
+    end if 
+
+
+end event
+
+
+windowevent close
+
+if <dw_1.item.evalsystem.value> <> 'S'  and <dw_1.item.frozenfor.value> <> 'Y' then
+     messagebox=error$The Standard evaluation only
+     return false
+end if
+
+if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y' and <dw_1.item.frozenfor.value> <> 'Y' then
+    messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
+    //return false
+end if
+ 
+//cancel:update
+end event
