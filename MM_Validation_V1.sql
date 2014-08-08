@@ -119,14 +119,14 @@ end
 							--end
 ------ End Paste after POR_012 ------
 
------- Begin Paste after GRPOR_004 ------
-
 ------ Add to "Validation - MM" ------
 declare @m_whscode as varchar(8)
 declare @m_consignment as varchar(1)
 -- @m_date1
 -- @m_cardcode
 -- @m_itemcode
+
+------ Begin Paste after GRPOR_004 ------
 /***********************************************************************
 *****************************Goods Receipt PO***************************
 ***********************************************************************/
@@ -152,13 +152,13 @@ BEGIN
 
 		WHILE (@@FETCH_STATUS <>-1)
 		BEGIN
-			if @m_consignment = 'Y' then
+			if @m_consignment = 'Y'
 			begin
 				set @m_rowcount=0
 				SELECT @m_rowcount=COUNT(1)
 				FROM OWHS
 				WHERE WhsCode=@m_whscode
-				and U_beas_lck='W' and T2.U_M_ConsiVendor=@m_cardcode
+				and U_beas_lck='W' and U_M_ConsiVendor=@m_cardcode
 				
 				if @m_rowcount=0
 				begin
@@ -168,6 +168,7 @@ BEGIN
 				end
 			end
 			else
+			begin
 				set @m_rowcount=0
 				SELECT @m_rowcount=COUNT(1)
 				FROM OWHS
@@ -178,9 +179,7 @@ BEGIN
 						set @error=1
 						set @error_message='(GRPOR_005_2)The warehouse of line '+convert(varchar(20),@lineID+1)+' is not QC warehouse.'
 						select @error,@error_message
-				end
-			begin
-				
+				end				
 			end
 			FETCH NEXT FROM Temp_GRPOR_005_Curslr1 INTO @m_cardcode,@m_whscode,@m_itemcode,@m_consignment,@m_date1,@lineID
 		END
