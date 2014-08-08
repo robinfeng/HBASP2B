@@ -74,6 +74,17 @@ tab=protect=5=1
 
 end if
 
+// Remark:Add user define field of OITM on be.as Item Master Data screen
+// By:Robin
+// Date:20140808
+etab=addnewobject=stamm=D_sn_comp_item=column=userfield1=nextlinefrom=u_brgew
+etab=addnewobject=stamm=D_sn_comp_item_t=text=Serial number Component Item=nextlinefrom=u_brgew_t
+
+etab=addnewobject=stamm=M_cmp_version=column=userfield2=nextlinefrom=D_sn_comp_item
+etab=addnewobject=stamm=M_cmp_version_t=text=CMP Version=nextlinefrom=D_sn_comp_item_t
+
+select u_D_sn_comp_item,U_M_cmp_version into D_sn_comp_item, M_cmp_version from oitm where itemcode=N'<str_parm.s_parm1>'
+
 end event
 
 
@@ -112,6 +123,10 @@ if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and 
     return false
 end if
 
+// Remark:Add user define field of OITM on be.as Item Master Data screen
+// By:Robin
+// Date:20140808
+sql=update oitm set u_D_sn_comp_item=N'<D_sn_comp_item>',u_M_cmp_version=N'<M_cmp_version>' where itemcode=N'<str_parm.s_parm1>'
 
 end event
 

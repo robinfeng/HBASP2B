@@ -1,15 +1,19 @@
-// Add serial number tag
+﻿// Add serial number tag
 // robin.feng@tech-sonic.net
 // 2014.7.5
 windowevent open
 setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
 setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>
 
+end event
+
+windowevent postopen
 //messagebox=<ll_x><cr_lf><ll_y>
-create=text=x=25,y=1150,width=700,text=Serial Number,tab=30
-create=checkbox=x=955,y=1150,id=userfield1,name=serialnumtag,tab=31
-select scraptag into scraptag from beas_ftpos &
-  where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
+etab=addnewobject=stamm=serialnumtag=column=userfield1=nextlinefrom=same_startendtime
+etab=addnewobject=stamm=serialnumtag_t=text=Serial Number=nextlinefrom=same_startendtime_t
+//create=text=x=25,y=1150,width=700,text=Serial Number,tab=31
+//create=checkbox=x=955,y=1150,id=userfield1,name=serialnumtag,tab=31
+
 select serialnumtag into serialnumtag from beas_aplatz &
   where aplatz_id=N'<str_parm.s_parm1>'
 end event

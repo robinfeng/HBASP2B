@@ -69,3 +69,26 @@ values (<e_belnr_id>,<e_belpos_id>,'<sn>',1,1)
 //messagebox=<value>
 end if
 end
+
+// Coding ID: beas_stockmanagement_transfer
+// By: Robin
+// Date: 20140808
+// Description: validate to all QC order: 
+// a) non-consignmen: can't be "1-must be zero"
+// b) consignment: must be "1-must be zero"
+
+function transfer
+//message=error$$test default warehouse,<sys_dwname>,qs_qsfthaupt_edit
+if <sys_dwname> = qs_qsfthaupt_edit and <e_basetype> n= 20 then
+select isnull(t1.u_M_Consignment,'N'),t2.u_m_warehousecost from pdn1 t1, owhs t2 &
+  where t1.docentry=<basedocentry> and t1.linenum=<baselinenum> &
+  and t1.whscode=t2.whscode
+if <wert1> = Y and <wert2> n<> 1 then
+  message=error$$This is consignment goods receipt, warehouse must be "1-Must be zero"
+  return false
+end if
+if <wert1> = N and <wert2> n= 1 then
+  message=error$$This is non-consignment goods receipt, warehouse cannot be "1-Must be zero"
+  return false
+end if
+end function

@@ -31,6 +31,14 @@ end event
 // Date: 20140725
 // Description: Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
 windowevent itemchange udf1
+// S/N entered cannot be duplicated in one QC order
+select count(*) from beas_qsftmessung &
+  where charge_id=N'<dw_1.item.charge_id.value>' and udf1=N'<dw_1.item.udf1.value>'
+if <wert1> n> 0 then
+message=error$beas_qc_1006$S/N entered cannot be duplicated in one QC order.
+return true
+end if
+
 // If the sample unlocked, then can't update the udf1(Serial Number) field
 select isnull(udf1,'') from beas_qsftmessung &
   where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id.value>'
@@ -81,4 +89,5 @@ end if
 next
 message=error$beas_qc_1001$The Serial Number is error, can't find in goods receipt serial number list(OSRN)
 end if
+
 end event
