@@ -1,7 +1,7 @@
 ﻿// Coding ID: beas_pk_batchkalk_revaluation_header_postopen
 // By: robin.feng@tech-sonic.net
 // Date: 20140725
-// Description: Add Select all & unselect all button
+// Description: Add filter button to unselect these lines which warehouse is “must be zero”
 
 windowevent postopen
 //item.reference2.dropdown.activate
@@ -19,7 +19,10 @@ windowevent click filter
 for=loop=1=<dw_2.rowcount>
 setrow=<loop>
 
-if <dw_2.item.whscode:[loop].value> = 910 then
+select convert(int,U_M_WarehouseCost) from OWHS &
+where whscode=N'<dw_2.item.whscode:[loop].value>'
+
+if <wert1> n= 1 then
 dw_2.item.ok:[loop].value=0
 dw_2.item.newprice:[loop].value=0
 end if

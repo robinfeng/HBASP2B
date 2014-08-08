@@ -1,6 +1,7 @@
-// Time receipt customise
-// robin.feng@tech-sonic.net
-// 2014.7.4
+﻿// Coding ID: beas_fert_arbzeit_erfassen_itemchange_barcode
+// By: robin.feng@tech-sonic.net
+// Date: 20140704
+// Description: 
 windowevent itemchange barcode
 // Disable the "resource" field
 item.aplatz_id=protect=1
@@ -47,56 +48,88 @@ setitem=udf1=
 menu=redraw
 end event
 
-// Update the dropdown list of Serial Number, when click the dropdown button
+// Coding ID: beas_fert_arbzeit_erfassen_click_udf1_p
+// By: robin.feng@tech-sonic.net
+// Date: 20140704
+// Description: Update the dropdown list of Serial Number, when click the dropdown button
 windowevent click udf1_p
-item.udf1.dropdown.select item from beas_ftpos_reservierung &
-  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0>
+//item.udf1.dropdown.select item from beas_ftpos_reservierung &
+//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0>
+select oitm.U_D_sn_comp_item from beas_ftpos,oitm &
+where beas_ftpos.belnr_id=<belnr_id> and beas_ftpos.belpos_id=<belpos_id> &
+and beas_ftpos.itemcode=oitm.itemcode
+setvar=l_sn_comp_item=<wert1>
+
+item.udf1.dropdown.select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'ibt1_batchnum'&
+,oitm.itemcode+'' as 'ibt1_itemcode' &
+,oitm.itemname+'' as 'oitm_itemname' &
+,oitm.mansernum+'' as mansernum &
+,oitm.manbtchnum+'' as manbtchnum &
+,itl1.quantity as 'ibt1_quantity' &
+, ige1.u_posid+0 as ign1_u_posid &
+from ige1  &
+inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ige1.U_belnrid = serial.belnr_id  &
+and ige1.U_belposid = serial.belpos_id and serial.pos_id = ige1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ige1.U_belnrid = batch.belnr_id  &
+and ige1.U_belposid = batch.belpos_id and batch.pos_id = ige1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ige1.u_belnrid=<belnr_id> and ige1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<l_sn_comp_item>' and oitm.ManSerNum='Y' &
+order by ige1.u_belnrid, ige1.u_belposid, itl1.SysNumber desc
 end event
 
-// When click Partial receipt button
-// Check the serial number and resource
-windowevent click b_3
-setvar=wert1=
-select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-setvar=res_sn_tag=<wert1>
-setvar=sn_len=%len(<dw_1.item.udf1.value>)
-setvar=wert1=
-select count(1) from beas_ftpos_reservierung &
-  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-  and item='<dw_1.item.udf1.value>'
-setvar=sn_in_reservation=<wert1>
-//messagebox=<inputserialnumber>
-if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-return false
-end if
-
-if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-return false
-end if
-end event
-
-// When click confirm completion button
-// Check the serial number and resource
-windowevent click b_4
-setvar=wert1=
-select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-setvar=res_sn_tag=<wert1>
-setvar=sn_len=%len(<dw_1.item.udf1.value>)
-setvar=wert1=
-select count(1) from beas_ftpos_reservierung &
-  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-  and item='<dw_1.item.udf1.value>'
-setvar=sn_in_reservation=<wert1>
-//messagebox=<inputserialnumber>
-if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-return false
-end if
-
-if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-return false
-end if
-end event
+//// When click Partial receipt button
+//// Check the serial number and resource
+//windowevent click b_3
+//setvar=wert1=
+//select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+//setvar=res_sn_tag=<wert1>
+//setvar=sn_len=%len(<dw_1.item.udf1.value>)
+//setvar=wert1=
+//select count(1) from beas_ftpos_reservierung &
+//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
+//  and item='<dw_1.item.udf1.value>'
+//setvar=sn_in_reservation=<wert1>
+////messagebox=<inputserialnumber>
+//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
+//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
+//return false
+//end if
+//
+//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
+//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
+//return false
+//end if
+//end event
+//
+//// When click confirm completion button
+//// Check the serial number and resource
+//windowevent click b_4
+//setvar=wert1=
+//select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+//setvar=res_sn_tag=<wert1>
+//setvar=sn_len=%len(<dw_1.item.udf1.value>)
+//setvar=wert1=
+//select count(1) from beas_ftpos_reservierung &
+//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
+//  and item='<dw_1.item.udf1.value>'
+//setvar=sn_in_reservation=<wert1>
+////messagebox=<inputserialnumber>
+//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
+//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
+//return false
+//end if
+//
+//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
+//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
+//return false
+//end if
+//end event

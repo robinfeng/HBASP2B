@@ -1,12 +1,9 @@
 ﻿// Coding ID: beas_qs_ftmessung_browse_postopen
 // By: robin.feng@tech-sonic.net
 // Date: 20140725
-// Description: Set the udf1 is visible, and name it SerialNumber.
+// Description: Set the udf1 is visible
 // Only serial number item visible.
 windowevent postopen
-[automaticscript]
-dw_1.item.udf1_t.formatstring=text=SerialNumber,
-[/automaticscript]
 select mansernum from oitm &
   where itemcode=N'<parent.dw_1.item.itemcode.value>'
 if <wert1> = Y then
@@ -41,7 +38,7 @@ select isnull(udf1,'') from beas_qsftmessung &
 setvar=l_udf1=<wert1>
 //messagebox=<dw_1.item.knd_id.value><cr_lf>
 if <dw_1.item.pruefkz.value> <>  then
-message=error$beas_qc_1005$The input Serial Number is error, the sample status is unlocked.
+message=error$beas_qc_1005$The input Serial Number is error, the sample status must be Open
 setitem=udf1=<l_udf1>
 reutrn false
 end if

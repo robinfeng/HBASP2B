@@ -23,7 +23,7 @@ end function
 function issueend
 if <e_type> = issuewo then
 
-select top 1&
+select top 1 &
 case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'ibt1_batchnum' &
 ,oitm.itemcode+'' as 'ibt1_itemcode' &
 ,oitm.itemname+'' as 'oitm_itemname' &

@@ -1,6 +1,8 @@
-﻿// Update UDF of serial number from qc order position
-// robin.feng@tech-sonic.net
-// 2014.7.11
+﻿// Coding ID: beas_qs_qsftpos_edit_itemchange_messwertc
+// By: robin.feng@tech-sonic.net
+// Date: 20140711
+// Description: Auto update S/N master data based on the mapping relationship and the value input in the QC order by S/N
+
 windowevent itemchange messwertc
 setvar=len_udf1=%len(<parent.dw_1.item.udf1.value>)
 if <len_udf1> n= 0 then
