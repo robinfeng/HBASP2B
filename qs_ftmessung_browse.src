@@ -1,8 +1,7 @@
 ﻿// Coding ID: beas_qs_ftmessung_browse_postopen
 // By: robin.feng@tech-sonic.net
 // Date: 20140725
-// Description: Set the udf1 is visible
-// Only serial number item visible.
+// Description: S/N can be entered by sample in QC order for S/N managed item
 windowevent postopen
 select mansernum from oitm &
   where itemcode=N'<parent.dw_1.item.itemcode.value>'
@@ -29,65 +28,87 @@ end event
 // Coding ID: beas_qs_ftmessung_browse_itemchange_udf1
 // By: robin.feng@tech-sonic.net
 // Date: 20140725
-// Description: Check the udf1(Serial Number) is in goods receipt serial number list(OSRN)
+// Description: Check the udf1(Serial Number):
+// 1. S/N entered cannot be duplicated in one QC order
+// 2. S/N entered must be within original document (GRPO)
+// 3. S/N entered cannot be updated unless the measurement position of the sample has no value
+//    Note: Only "Open" status sample can ernter S/N
 windowevent itemchange udf1
-// S/N entered cannot be duplicated in one QC order
-select count(*) from beas_qsftmessung &
-  where charge_id=N'<dw_1.item.charge_id.value>' and udf1=N'<dw_1.item.udf1.value>'
-if <wert1> n> 0 then
-message=error$beas_qc_1006$S/N entered cannot be duplicated in one QC order.
-return true
-end if
-
-// If the sample unlocked, then can't update the udf1(Serial Number) field
+setglobal=g_sn_error=N
+// Record the old serial number into "l_udf1"
 select isnull(udf1,'') from beas_qsftmessung &
-  where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id.value>'
+  where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id:[dwo-row].value>'
 //messagebox=<dw_1.item.pruefkz:[dwo-row].value>
 setvar=l_udf1=<wert1>
-//messagebox=<dw_1.item.knd_id.value><cr_lf>
-if <dw_1.item.pruefkz.value> <>  then
-message=error$beas_qc_1005$The input Serial Number is error, the sample status must be Open
+
+// 1. S/N entered cannot be duplicated in one QC order
+select count(*) from beas_qsftmessung &
+  where charge_id=N'<dw_1.item.charge_id.value>' and udf1=N'<dw_1.item.udf1:[dwo-row].value>'
+if <wert1> n> 0 then
 setitem=udf1=<l_udf1>
-reutrn false
+message=error$beas_qc_1006$S/N entered cannot be duplicated in one QC order.
+return false
 end if
 
-// If goods receipt an item with serial number management
+// 3. S/N entered cannot be updated unless the measurement position of the sample has no value
+//    Note: Only "Open" status sample can ernter S/N
+if <dw_1.item.pruefkz:[dwo-row].value> = F then
+setitem=udf1=<l_udf1>
+message=error$$This sample status is Unlocked, you can't update this serial number
+return false
+end if
+
+if <dw_1.item.pruefkz:[dwo-row].value> = E then
+setitem=udf1=<l_udf1>
+message=error$$This sample status is Blocked, you can't update this serial number
+return false
+end if
+
+// 2. S/N entered must be within original document (GRPO)
+setglobal=g_basetyp=
+if <parent.dw_1.item.typ.value> = W then
+  setglobal=g_basetyp=20
+end if
+
+if <parent.dw_1.item.typ.value> = M then
+  setglobal=g_basetyp=59
+end if
+
 setvar=wert1=
 select mansernum from oitm &
   where itemcode=N'<parent.dw_1.item.itemcode.value>'
 
-setvar=l_basetyp=
-if <parent.dw_1.item.typ.value> = W then
-  setvar=l_basetyp=20
-end if
-
-if <parent.dw_1.item.typ.value> = M then
-  setvar=l_basetyp=59
-end if
-
 //message=<parent.dw_1.item.typ.value><cr_lf><wert1>
-if <wert1> = Y then
-select basedocentry, baselinenum from beas_qsfthaupt &
-  where basetype=<l_basetyp> and charge_id=N'<dw_1.item.charge_id.value>'
-setvar=grpo_docentry=<wert1>
-setvar=grpo_linnum=<wert2>
+// If goods receipt an item with serial number management
+if <wert1> = Y and <global:g_basetyp> n= 20 then
+select count(1) from beas_qsfthaupt t1, oitl t2, itl1 t3, osrn t4 &
+  where t1.basetype=<global:g_basetyp> and t1.charge_id=N'<dw_1.item.charge_id.value>' &
+  and t1.basedocentry=t2.docentry and t1.baselinenum=t2.docline &
+  and t2.logentry=t3.logentry &
+  and t4.itemcode=N'<parent.dw_1.item.itemcode.value>' &
+  and t4.sysnumber=t3.sysnumber &
+  and t4.distnumber=N'<dw_1.item.udf1:[dwo-row].value>'
 
-select logentry from oitl where doctype=<l_basetyp> and docentry=<grpo_docentry> and docline=<grpo_linnum>
-setvar=logentry=<wert1>
-//message=<logentry>
-declare=ds_sn=ue_datastorevalues
-ds_sn=select * from itl1 where logentry=<logentry>
+if <wert1> n= 0 then
+setitem=udf1=<l_udf1>
+message=error$beas_qc_1001$The Serial Number is error, can't find in goods receipt serial number list(OSRN)
+return false
+end if
+end if
 
-for=loop=1=<ds_sn.rowcount>
-ds_sn.setrow=<loop>
-select distnumber from osrn where itemcode=N'<parent.dw_1.item.itemcode.value>' and sysnumber=<ds_sn.sysnumber.value>
-//messagebox=<dw_1.item.udf1.value,trim><cr_lf><wert1,trim>
-if <dw_1.item.udf1.value,trim> = <wert1,trim> then
+setglobal=g_sn_error=Y
 message=info$beas_qc_1002$The entried Serial Number is ok.
 return true
-end if
-next
-message=error$beas_qc_1001$The Serial Number is error, can't find in goods receipt serial number list(OSRN)
-end if
 
+end event
+
+// Coding ID: beas_qs_qsftpos_edit_open
+// By: Robin
+// Date: 20140809
+// Description: If the serial number is error, can't modify the measurement
+windowevent click b_1
+if <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
+messagebox=error$$Can't modify the measurement position, please check the serial number.
+return false
+end if
 end event

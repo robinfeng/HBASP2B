@@ -34,3 +34,4 @@ end if
 message=info$beas_qc_1003$The <dw_1.item.qs_id.value> of S/N(<parent.dw_1.item.udf1.value>) updated.
 end if
 end event
+

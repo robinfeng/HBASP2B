@@ -78,17 +78,52 @@ end
 // b) consignment: must be "1-must be zero"
 
 function transfer
-//message=error$$test default warehouse,<sys_dwname>,qs_qsfthaupt_edit
+//message=error$$test default warehouse,<sys_dwname>,<e_whscode>,&
+//<gutwhscode>,<schlechtwhscode>,<gutmenge>,<schlechtmenge>,<basedocentry>,<baselinenum>
 if <sys_dwname> = qs_qsfthaupt_edit and <e_basetype> n= 20 then
-select isnull(t1.u_M_Consignment,'N'),t2.u_m_warehousecost from pdn1 t1, owhs t2 &
-  where t1.docentry=<basedocentry> and t1.linenum=<baselinenum> &
-  and t1.whscode=t2.whscode
-if <wert1> = Y and <wert2> n<> 1 then
-  message=error$$This is consignment goods receipt, warehouse must be "1-Must be zero"
-  return false
+	// If unlock quantity greater than 0
+	if <gutmenge> n> 0 then
+		select isnull(t1.u_M_Consignment,'N') &
+		from pdn1 t1 &
+		where t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+		setvar=l_consignment=<wert1>
+		
+		select isnull(t2.u_m_warehousecost,3) &
+		from owhs t2 &
+		where t2.whscode='<gutwhscode>'
+		setvar=l_warehousecost=<wert1>
+		//message=error$$unlock:<l_consignment>,<l_warehousecost>
+		if <l_consignment> = Y and <l_warehousecost> n<> 1 then
+		  message=error$beas_qc_1008$This is consignment goods receipt, warehouse must be "1-Must be zero"
+		  return false
+		end if
+		if <l_consignment> = N and <l_warehousecost> n= 1 then
+		  message=error$beas_qc_1009$This is non-consignment goods receipt, warehouse cannot be "1-Must be zero"
+		  return false
+		end if
+	end if
+	
+	// If block quantity greater than 0
+	if <schlechtmenge> n> 0 then
+		select isnull(t1.u_M_Consignment,'N') &
+		from pdn1 t1 &
+		where t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+		setvar=l_consignment=<wert1>
+		
+		select isnull(t2.u_m_warehousecost,3) &
+		from owhs t2 &
+		where t2.whscode='<schlechtwhscode>'
+		setvar=l_warehousecost=<wert1>
+		//message=error$$block:<l_consignment>,<l_warehousecost>
+		if <l_consignment> = Y and <l_warehousecost> n<> 1 then
+		  message=error$beas_qc_1008$This is consignment goods receipt, warehouse must be "1-Must be zero"
+		  return false
+		end if
+		if <l_consignment> = N and <l_warehousecost> n= 1 then
+		  message=error$beas_qc_1009$This is non-consignment goods receipt, warehouse cannot be "1-Must be zero"
+		  return false
+		end if
+	end if	
 end if
-if <wert1> = N and <wert2> n= 1 then
-  message=error$$This is non-consignment goods receipt, warehouse cannot be "1-Must be zero"
-  return false
-end if
+//return false
 end function
