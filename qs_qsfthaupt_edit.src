@@ -50,7 +50,7 @@ from owhs,oitw &
 where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
 and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
 and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
-and owhs.u_M_ConsiVendor==N'<dw_1.item.cardcode.value>'
+and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
 setitem=schlechtwhscode=<wert1>
 //schlechtwhscode=protect=1
 end if

@@ -19,7 +19,7 @@ select max(belpos_id) from beas_ftpos where belnr_id=<belnr_id>
 //message=<wert1> <cr_lf> <belpos_id>
 if <belpos_id> n= <wert1,#0> then
 select count(1) from beas_ftpos_reservierung where belnr_id=<belnr_id> and belpos_id=<belpos_id>
-update beas_fthaupt set sn_counter=sn_counter-<wert1> where belnr_id=<belnr_id>
+//update beas_fthaupt set sn_counter=sn_counter-<wert1> where belnr_id=<belnr_id>
 end if
 end function
 
@@ -31,10 +31,12 @@ end function
 // 2. S/N value entry must be one of the S/N of the preforms issued to the WO
 function timerecordingstart
 setvar=wert1=
-select aplatz_id,udf1 from beas_arbzeit where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> and pos_id=<e_pos_id>
-setvar=l_aplatz=<wert1>
-setvar=l_serialnumber=<wert2>
-setvar=l_sn_len=%len(<wert2>)
+//select aplatz_id,udf1 from beas_arbzeit where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> and pos_id=<e_pos_id>
+setvar=l_aplatz=<aplatz_id>
+setvar=l_serialnumber=<udf1>
+setvar=l_sn_len=%len(<udf1>)
+
+//messagebox=<aplatz_id>,<udf1>
 
 select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<l_aplatz>'
 setvar=res_sn_tag=<wert1>
@@ -50,12 +52,11 @@ message=error$beas_tr_1001$The resource have to record serial number in time rec
 return false
 end if
 
-select oitm.U_D_sn_comp_item from beas_ftpos,oitm &
-where beas_ftpos.belnr_id=<e_belnr_id> and beas_ftpos.belpos_id=<e_belpos_id> &
-and beas_ftpos.itemcode=oitm.itemcode
+select udf2 from beas_ftpos &
+where beas_ftpos.belnr_id=<e_belnr_id> and beas_ftpos.belpos_id=<e_belpos_id>
 setvar=l_sn_comp_item=<wert1>
 
-if <l_sn_comp_item> <> then
+if <res_sn_tag> = 'Y' and <l_sn_comp_item> <>  then
 select count(1) &
 from ige1  &
 inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
@@ -74,8 +75,8 @@ and oitl.DocLine = batch.baseline &
 where ige1.u_belnrid=<e_belnr_id> and ige1.u_belposid=<e_belpos_id> &
 and oitm.itemcode=N'<l_sn_comp_item>' and oitm.ManSerNum='Y' &
 and osrn.distnumber='<l_serialnumber>'
-if <wert1> n= 0 then
-  message=error$beas_tr_1003$message=error$beas_tr_1003$The Serial Number is error, can't find the s/n in current work order related serial management item goods issue.
+if <wert1> n= 0 and <res_sn_tag> = Y then
+  message=error$beas_tr_1003$The Serial Number is error, can't find the s/n in current work order related serial management item goods issue.
   return false
 end if
 end if

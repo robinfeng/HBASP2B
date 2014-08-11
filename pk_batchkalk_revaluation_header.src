@@ -7,7 +7,7 @@ windowevent postopen
 //item.reference2.dropdown.activate
 //item.reference2.dropdown.select whscode,whsname from owhs
 
-create=button=name=filter,menutext=Filter Warehouse,text=Filter Warehouse
+create=button=name=filter,menutext=Reset zero price,text=Reset zero price
 //create=button=name=selectall,menutext=Select All,text=Select All
 //create=button=name=unselectall,menutext=Unselect All,text=Unselect All
 end event

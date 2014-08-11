@@ -50,11 +50,23 @@ create=text=x=3100,y=<ll_y>,width=700,text=Scrap order
 create=checkbox=x=3400,y=<ll_y>,id=userfield1,name=scraptag,tab=41
 select scraptag into scraptag from beas_ftpos &
   where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
+select u_D_sn_comp_item,u_M_cmp_version into udf2,udf3 from oitm where itemcode=N'<itemcode>'
 end event
 
 // update database to "scraptag"
 windowevent update
-sql=update beas_ftpos set scraptag='<dw_1.item.scraptag.value>' &
+sql=update beas_ftpos set scraptag='<dw_1.item.scraptag.value>', &
+  udf2='<udf2>', udf3='<udf3>'
   where belnr_id=<str_parm.belnr_id,#0> &
   and belpos_id=<str_parm.belpos_id,#0>
+end event
+
+// Coding ID:beas_fert_ftpos_edit_itemchange_itemcode
+// By:Robin
+// Date:2014.8.11
+// Description:Copy the CMP_Version, serial component itemcode from item master data
+windowevent itemchange itemcode
+select u_D_sn_comp_item,u_M_cmp_version from oitm where itemcode=N'<itemcode>'
+setitem=udf2=<wert1>
+setitem=udf3=<wert2>
 end event
