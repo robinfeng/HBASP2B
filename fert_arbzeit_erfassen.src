@@ -14,37 +14,21 @@ item.timetype_id_p.visible=0
 item.udf1.dropdown.activate
 //item.udf1.edit.update=no
 
-// Control "time type" field, 
-// check the setup time and process time in routing:
-// If setup time larger than zero, then "time type" equal "setup" 
-sql=select "TRAPlatz", "TEAPlatz" into setuptime:#0.000, processtime:#0.000 from beas_ftapl &
-  where nummer=<dw_1.item.barcode.value,#0>
-
-if <setuptime> n> 0 then
-setitem=typ=R
-else
-setitem=typ=A
-end if
-
-// Update "cost element" by "time type"
+// entsprechenden Timetype abhängig vom Typ hinterlegen
+// 17.3.09 M.Heigl
 setvar=wert1=
 if <typ> = H then
-  select "thtimetype_id" into timetype_id from "BEAS_FTAPL" &
-    where "nummer"=<dw_1.item.barcode.value,#0>
+  select "thtimetype_id" into timetype_id from "BEAS_FTAPL" where "nummer"=N'<dw_1.item.barcode.value>'
 end if
 if <typ> = N then
-  select "tntimetype_id" into timetype_id from "BEAS_FTAPL" &
-    where "nummer"=<dw_1.item.barcode.value,#0>
+  select "tntimetype_id" into timetype_id from "BEAS_FTAPL" where "nummer"=N'<dw_1.item.barcode.value>'
 end if
 if <typ> = R then
-  select "trtimetype_id" into timetype_id from "BEAS_FTAPL" &
-    where "nummer"=<dw_1.item.barcode.value,#0>
+  select "trtimetype_id" into timetype_id from "BEAS_FTAPL" where "nummer"=N'<dw_1.item.barcode.value>'
 end if
 if <typ> = A or <typ> = E  then
-  select "timetype_id" into timetype_id from "BEAS_FTAPL" &
-    where "nummer"=<dw_1.item.barcode.value,#0>
+  select "timetype_id" into timetype_id from "BEAS_FTAPL" where "nummer"=N'<dw_1.item.barcode.value>'
 end if
-setitem=udf1=
 menu=redraw
 end event
 

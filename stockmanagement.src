@@ -5,18 +5,18 @@ function serialnumcreater
 // Configuration wizard > Production > Valuation and booking of assembly > Serial Number > Form to create (xxx=sequential No)
 // Example S/N: H14-AAE-001
 // Note: Don't support over 999 per work order.
-if <e_type> <> receiptWO then
-select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
-setvar=bns=H<today,yy>-<wert1>
-setvar=sn_counter=%numadd(<wert2>,1)	
-setvar=sn_counter=000<sn_counter>
+//if <e_type> <> receiptWO then
+//select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
+//setvar=bns=H<today,yy>-<wert1>
+//setvar=sn_counter=%numadd(<wert2>,1)	
+//setvar=sn_counter=000<sn_counter>
 
-select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+//select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
 
-setstr=s_parm1=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
+//setstr=s_parm1=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
 //update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
-end if
-return success
+//end if
+//return success
 end function
 
 
@@ -55,14 +55,14 @@ order by ige1.u_belnrid, ige1.u_belposid, itl1.SysNumber desc
 //values (<e_belnr_id>,<e_belpos_id>,'<wert1>',1,1)
 
 // By work order reserve S/N
-select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
-setvar=bns=H<today,yy>-<wert1>
-setvar=sn_counter=%numadd(<wert2>,1)	
-setvar=sn_counter=000<sn_counter>
+//select udf1, isnull(sn_counter,0) from beas_fthaupt where belnr_id=<e_belnr_id>
+//setvar=bns=H<today,yy>-<wert1>
+//setvar=sn_counter=%numadd(<wert2>,1)	
+//setvar=sn_counter=000<sn_counter>
 
-select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
+//select count(1) from beas_ftpos_reservierung where belnr_id=<e_belnr_id>
 
-setvar=sn=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
+//setvar=sn=H<today,yy>-<select udf1 from beas_fthaupt where belnr_id=[e_belnr_id]>-<sn_counter,right 3>
 //update beas_fthaupt set sn_counter=isnull(sn_counter,0)+1 where belnr_id=<e_belnr_id>
 //sql=insert into beas_ftpos_reservierung (belnr_id,belpos_id,item,quantity,openqty) &
 //values (<e_belnr_id>,<e_belpos_id>,'<sn>',1,1)
@@ -128,22 +128,58 @@ end if
 //return false
 end function
 
-// Coding ID: beas_stockmanagement_receiptwo
+// Coding ID: beas_stockmanagement_receipt
 // By: Robin
 // Date: 2014081
 // Description: S/N value drop list & validation
 // 1. S/N is mandatory if resource is defined as S/N relevant
 // 2. S/N value entry must be one of the S/N of the preforms issued to the WO
+// 3. The quantity can't greater than total issue quantity
 function receipt
 
+// Get the serial number componet item
 select udf2 from beas_ftpos &
 where beas_ftpos.belnr_id=<e_belnr_id> and beas_ftpos.belpos_id=<e_belpos_id> 
 setvar=l_sn_comp_item=<wert1>
 
-messagebox=receiptwo:<typ>,<l_sn_comp_item>,<serialnumber>
+//messagebox=<sys_dwname>,<typ>,<e_belnr_id>,<e_belpos_id>,<e_pos_id><cr_lf> &
+//<itemcode>,<l_sn_comp_item>,<serialnumber>,<batchnum><cr_lf> &
+//<menge>
+
 //return false
-if <typ> = F and <l_sn_comp_item> <>  then
-select count(1) &
+
+// The validation for WO receiving to check serial number consistence between preform and FG does not work
+if <typ> = F and <e_pos_id> n= 0 and <l_sn_comp_item> <> then
+
+select count(X.serialnum) &
+//sum(X.ibt1_quantity) &
+from ( &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+//,oitm.itemcode+'' as 'ibt1_itemcode' &
+//,oitm.itemname+'' as 'oitm_itemname' &
+//,oitm.mansernum+'' as mansernum &
+//,oitm.manbtchnum+'' as manbtchnum &
+,itl1.quantity as 'ibt1_quantity' &
+//, ige1.u_posid+0 as ign1_u_posid &
+from ign1  &
+inner join oitl on oitl.doctype=59 and oitl.docentry=ign1.docentry and oitl.docline=ign1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ign1.U_belnrid = serial.belnr_id  &
+and ign1.U_belposid = serial.belpos_id and serial.pos_id = ign1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ign1.U_belnrid = batch.belnr_id  &
+and ign1.U_belposid = batch.belpos_id and batch.pos_id = ign1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ign1.u_belnrid=<belnr_id> and ign1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<l_sn_comp_item>' and oitm.ManSerNum='Y' &
+union all &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+,itl1.quantity as 'ibt1_quantity' &
 from ige1  &
 inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
 inner join itl1 on itl1.logentry=oitl.logentry  &
@@ -158,13 +194,107 @@ left join beas_ftzuordnung batch on ige1.U_belnrid = batch.belnr_id  &
 and ige1.U_belposid = batch.belpos_id and batch.pos_id = ige1.U_posid  &
 and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
 and oitl.DocLine = batch.baseline &
-where ige1.u_belnrid=<e_belnr_id> and ige1.u_belposid=<e_belpos_id> &
+where ige1.u_belnrid=<belnr_id> and ige1.u_belposid=<belpos_id> &
 and oitm.itemcode=N'<l_sn_comp_item>' and oitm.ManSerNum='Y' &
-and osrn.distnumber='<serialnumber>'
+) X &
+where X.serialnum='<serialnumber>' &
+group by X.serialnum &
+having sum(X.ibt1_quantity)=-1
+
 if <wert1> n= 0 then
   message=error$beas_tr_1003$The Serial Number is error, can't find the s/n in current work order related serial management item goods issue.
   return false
 end if
 end if
 
+// The validation in Post in from production and Change off to production to validate the S/N instead of cancellation function
+if <typ> = F and <e_pos_id> n<> 0 then
+
+select SUM(x.qty) &
+from ( &
+// goods issue
+select itemcode, Quantity qty from ige1 &
+where U_belnrid=<e_belnr_id> and U_belposid=<e_belpos_id> and U_posid=<e_pos_id> &
+union all &
+// goods receipt
+select itemcode, -quantity qty from IGN1 &
+where U_belnrid=<e_belnr_id> and U_belposid=<e_belpos_id> and U_posid=<e_pos_id> &
+) x &
+where x.itemcode=N'<itemcode>' &
+group by x.ItemCode
+
+if <menge> n> <wert1> then
+  message=error$beas_wo_$The receipt quantity can't greater than total issue quantity
+  return false
+end if
+
+select count(1) from OITM where (ManBtchNum='Y' or ManSerNum='Y') and itemcode=N'<itemcode>'
+if <wert1> n= 1 then
+// If the item is serial management or batch management
+select count(X.serialnum) &
+//sum(X.ibt1_quantity) &
+from ( &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+//,oitm.itemcode+'' as 'ibt1_itemcode' &
+//,oitm.itemname+'' as 'oitm_itemname' &
+//,oitm.mansernum+'' as mansernum &
+//,oitm.manbtchnum+'' as manbtchnum &
+,itl1.quantity as 'ibt1_quantity' &
+//, ige1.u_posid+0 as ign1_u_posid &
+from ign1  &
+inner join oitl on oitl.doctype=59 and oitl.docentry=ign1.docentry and oitl.docline=ign1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ign1.U_belnrid = serial.belnr_id  &
+and ign1.U_belposid = serial.belpos_id and serial.pos_id = ign1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ign1.U_belnrid = batch.belnr_id  &
+and ign1.U_belposid = batch.belpos_id and batch.pos_id = ign1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ign1.u_belnrid=<belnr_id> and ign1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<itemcode>' &
+union all &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+,itl1.quantity as 'ibt1_quantity' &
+from ige1  &
+inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ige1.U_belnrid = serial.belnr_id  &
+and ige1.U_belposid = serial.belpos_id and serial.pos_id = ige1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ige1.U_belnrid = batch.belnr_id  &
+and ige1.U_belposid = batch.belpos_id and batch.pos_id = ige1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ige1.u_belnrid=<belnr_id> and ige1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<itemcode>' &
+) X &
+where X.serialnum='<serialnumber>' or X.serialnum='<batchnum>' &
+group by X.serialnum &
+having sum(X.ibt1_quantity)<0
+if <wert1> n= 0 then
+  message=error$beas_wo_$The S/N or B/N is error, can't find the s/n in current work order related item goods issue.
+  return false
+end if
+end if
+end if
+
+// Check all operation sequences is closed, before goods receipt for production
+if <typ> = F and <e_pos_id> n= 0 then
+select count(1) from beas_ftapl &
+where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> &
+and abgkz='N' and bde='J'
+if <wert1> n> 0 then
+  message=error$beas_wo_$Can't receipt assembly for this work order position, some operation sequences still open
+  return false
+end if
+end if 
 end function

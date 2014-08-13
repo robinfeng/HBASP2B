@@ -15,6 +15,7 @@ end event
 windowevent click filter
 //dw_2.setfilter=whscode='<dw_1.item.reference2.value>'
 //dw_2.filter
+setvar=ll_count=0
 
 for=loop=1=<dw_2.rowcount>
 setrow=<loop>
@@ -25,8 +26,12 @@ where whscode=N'<dw_2.item.whscode:[loop].value>'
 if <wert1> n= 1 then
 dw_2.item.ok:[loop].value=0
 dw_2.item.newprice:[loop].value=0
+setvar=l_count=%numadd(<ll_count>,1)
 end if
 next
+if <ll_count> n= 0 then
+message=info$$No item needs to be updated as zero price.
+end if
 end event
 
 //
