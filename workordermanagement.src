@@ -3,14 +3,14 @@
 // @ZDSRN, Serial Number’s LOT number Master，ObjectType: Master Data
 // @ZDSR1, Serial Number’s LOT number Detail，ObjectType: Master Data Rows
 function createbelnrid
-select Top 1 U_LOT from [@zdsr1] &
-where code='<today,yyyy>' and ISNULL(u_used,'N')='N' &
-order by u_lot
+//select Top 1 U_LOT from [@zdsr1] &
+//where code='<today,yyyy>' and ISNULL(u_used,'N')='N' &
+//order by u_lot
 
-setitem=udf1=<wert1>
+//setitem=udf1=<wert1>
 
-update [@zdsr1] set U_Used='Y' &
-where code='<today,yyyy>' and isnull(U_LOT,'N')='<udf1>'
+//update [@zdsr1] set U_Used='Y' &
+//where code='<today,yyyy>' and isnull(U_LOT,'N')='<udf1>'
 end function
 
 // Update work order's S/N counter, when delete work order position
@@ -29,6 +29,7 @@ end function
 // Description: S/N value drop list & validation
 // 1. S/N is mandatory if resource is defined as S/N relevant
 // 2. S/N value entry must be one of the S/N of the preforms issued to the WO
+// 3. Need to add a validation in time confirmation that time confirmation can only be saved when the cost element is not empty
 function timerecordingstart
 setvar=wert1=
 //select aplatz_id,udf1 from beas_arbzeit where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> and pos_id=<e_pos_id>
@@ -86,4 +87,10 @@ end if
 //return false
 end if
 
+//messagebox=<timetype_id>
+if <timetype_id> = then
+message=error$beas_tr_$The cost element is mandatory.
+reutrn false
+end if
+//return false
 end function

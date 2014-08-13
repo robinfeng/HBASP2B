@@ -298,3 +298,68 @@ if <wert1> n> 0 then
 end if
 end if 
 end function
+
+// Coding ID: beas_stockmanagement_issue
+// By: Robin
+// Date: 20140813
+// Description: The S/N or B/N is error, can't find the s/n in current work order related item goods receipt.
+function issue
+//messagebox=<sys_dwname>,<typ>,<e_belnr_id>,<e_belpos_id>,<e_pos_id><cr_lf> &
+//<itemcode>,<l_sn_comp_item>,<serialnumber>,<batchnum><cr_lf> &
+//<menge>
+if <sys_dwname> = mw_manuell_buchen and <typ> = F and <e_pos_id> n= 0 then
+select count(X.serialnum) &
+//sum(X.ibt1_quantity) &
+from ( &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+//,oitm.itemcode+'' as 'ibt1_itemcode' &
+//,oitm.itemname+'' as 'oitm_itemname' &
+//,oitm.mansernum+'' as mansernum &
+//,oitm.manbtchnum+'' as manbtchnum &
+,itl1.quantity as 'ibt1_quantity' &
+//, ige1.u_posid+0 as ign1_u_posid &
+from ign1  &
+inner join oitl on oitl.doctype=59 and oitl.docentry=ign1.docentry and oitl.docline=ign1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ign1.U_belnrid = serial.belnr_id  &
+and ign1.U_belposid = serial.belpos_id and serial.pos_id = ign1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ign1.U_belnrid = batch.belnr_id  &
+and ign1.U_belposid = batch.belpos_id and batch.pos_id = ign1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ign1.u_belnrid=<belnr_id> and ign1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<itemcode>' &
+union all &
+select case when oitm.mansernum='Y' then osrn.distnumber else obtn.distnumber end as 'serialnum'&
+,itl1.quantity as 'ibt1_quantity' &
+from ige1  &
+inner join oitl on oitl.doctype=60 and oitl.docentry=ige1.docentry and oitl.docline=ige1.linenum  &
+inner join itl1 on itl1.logentry=oitl.logentry  &
+left join obtn on obtn.itemcode=itl1.itemcode and obtn.sysnumber=itl1.sysnumber  &
+left join osrn on osrn.itemcode=itl1.itemcode and osrn.sysnumber=itl1.sysnumber  &
+inner join oitm on oitm.itemcode=itl1.itemcode  &
+left join beas_ftzuordnung serial on ige1.U_belnrid = serial.belnr_id  &
+and ige1.U_belposid = serial.belpos_id and serial.pos_id = ige1.U_posid  &
+and serial.from_item = osrn.DistNumber and oitl.docentry = serial.basedocentry  &
+and oitl.DocLine = serial.baseline &
+left join beas_ftzuordnung batch on ige1.U_belnrid = batch.belnr_id  &
+and ige1.U_belposid = batch.belpos_id and batch.pos_id = ige1.U_posid  &
+and batch.from_item = obtn.DistNumber and oitl.docentry = batch.basedocentry  &
+and oitl.DocLine = batch.baseline &
+where ige1.u_belnrid=<belnr_id> and ige1.u_belposid=<belpos_id> &
+and oitm.itemcode=N'<itemcode>' &
+) X &
+where X.serialnum='<serialnumber>' &
+group by X.serialnum &
+having sum(X.ibt1_quantity)>0
+if <wert1> n= 0 then
+  message=error$beas_wo_$The S/N or B/N is error, can't find the s/n in current work order related item goods receipt.
+  return false
+end if
+//return false
+end function
