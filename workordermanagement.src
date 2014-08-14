@@ -90,7 +90,7 @@ end if
 //messagebox=<timetype_id>
 if <timetype_id> = then
 message=error$beas_tr_$The cost element is mandatory.
-reutrn false
+return false
 end if
 //return false
 end function
