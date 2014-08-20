@@ -3,7 +3,10 @@
 // Date: 20140725
 // Description: S/N can be entered by sample in QC order for S/N managed item
 windowevent postopen
+
 setglobal=g_sn_error=Y
+setglobal=g_sn_errormessage=
+
 select mansernum from oitm &
   where itemcode=N'<parent.dw_1.item.itemcode.value>'
 if <wert1> = Y then
@@ -14,7 +17,7 @@ visible=udf1=0
 protect=udf1=1
 end if
 
-visible=distnumber=0
+visible=distnumber=1
 protect=distnumber=1
 //create=button=name=del_no_sn,menutext=Del no S/N Sample,text=Del no S/N Sample
 
@@ -35,48 +38,52 @@ end event
 // 3. S/N entered cannot be updated unless the measurement position of the sample has no value
 //    Note: Only "Open" status sample can ernter S/N
 windowevent itemchange udf1
+//messagebox=<item.udf1.value> <cr_lf> &
+//  <dw_1.item.udf1:[dwo-row].value> <cr_lf> &
+//  <dw_1.item.pruefkz:[dwo-row].value> <cr_lf> &
+//  <global:g_sn_error>
 
 // Record the old serial number into "l_udf1"
 select isnull(udf1,'') from beas_qsftmessung &
   where charge_id=N'<dw_1.item.charge_id.value>' and knd_id='<dw_1.item.knd_id:[dwo-row].value>'
-//messagebox=<dw_1.item.pruefkz:[dwo-row].value>
+
 setvar=l_udf1=<wert1>
 
 // 1. S/N entered cannot be duplicated in one QC order
 select count(*) from beas_qsftmessung &
-  where charge_id=N'<dw_1.item.charge_id.value>' and udf1=N'<dw_1.item.udf1:[dwo-row].value>'
+  where charge_id=N'<dw_1.item.charge_id.value>' &
+  and isnull(udf1,'')=N'<dw_1.item.udf1:[dwo-row].value>' &
+  and isnull(udf1,'')<>''
 if <wert1> n> 0 then
-setitem=udf1=<l_udf1>
-setglobal=g_sn_error=N
-message=error$beas_qc_1006$S/N entered cannot be duplicated in one QC order.
-return false
+
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=S/N entered cannot be duplicated in one QC order.
+goto=end
 end if
 
 // 3. S/N entered cannot be updated unless the measurement position of the sample has no value
 //    Note: Only "Open" status sample can ernter S/N
 
 select count(1) from beas_qsftpos &
-  where charge_id=N'<dw_1.item.charge_id.value>' and knd_id=N'<dw_1.item.knd_id.value>' &
+  where charge_id=N'<dw_1.item.charge_id.value>' and knd_id=N'<dw_1.item.knd_id:[dwo-row].value>' &
   and len(messwertc)>0
 if <wert1> n> 0 and <global:g_basetyp> n= 20 then
-setglobal=g_sn_error=N
-setitem=udf1=<l_udf1>
-message=error$$SN entered cannot be updated unless the measurement position of the sample has no value
-return false
+
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=S/N entered cannot be updated unless the measurement position of the sample has no value.
+goto=end
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = F then
-setglobal=g_sn_error=N
-setitem=udf1=<l_udf1>
-message=error$$This sample status is Unlocked, you can't update this serial number
-return false
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=This sample status is Unlocked, you can't update this serial number.
+goto=end
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = E then
-setglobal=g_sn_error=N
-setitem=udf1=<l_udf1>
-message=error$$This sample status is Blocked, you can't update this serial number
-return false
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=This sample status is Blocked, you can't update this serial number.
+goto=end
 end if
 
 // 2. S/N entered must be within original document (GRPO)
@@ -105,17 +112,22 @@ select count(1) from beas_qsfthaupt t1, oitl t2, itl1 t3, osrn t4 &
   and t4.distnumber=N'<dw_1.item.udf1:[dwo-row].value>'
 
 if <wert1> n= 0 then
-setglobal=g_sn_error=N
-setitem=udf1=<l_udf1>
-message=error$beas_qc_1001$The Serial Number is error, can't find in goods receipt serial number list(OSRN)
-return false
+setglobal=g_sn_error=beas_qc_1001
+setglobal=g_sn_errormessage=The Serial Number is error, can't find in goods receipt serial number list(OSRN).
+goto=end
 end if
 end if
 
-setglobal=g_sn_error=Y
+[end]
+//messagebox=<global:g_sn_error>
+if <global:g_sn_error> = Y then
 message=info$beas_qc_1002$The entried Serial Number is ok.
 return true
-
+else
+setitem=udf1=<l_udf1>
+message=error$<global:g_sn_error>$<global:g_sn_errormessage>
+return false
+end if
 end event
 
 // Coding ID: beas_qs_ftmessung_browse_b_1
@@ -156,5 +168,11 @@ end if
 if <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
 messagebox=error$$Can't modify the measurement position, please check the serial number.
 return false
+end if
+end event
+
+windowevent click udf1
+if <item.udf1.value> = then
+item.udf1.value=<dw_1.item.distnumber.value>
 end if
 end event
