@@ -4,7 +4,8 @@
 windowevent open
 setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
 setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>
-
+dw_1.item.udf1.dropdown.activate
+dw_1.item.udf1.dropdown.select prccode, prcname from oprc where active='Y'
 end event
 
 windowevent postopen
@@ -18,6 +19,7 @@ item.serialnumtag.dropdown.values=Yes=Y,No=N
 
 select p_serialnumtag into serialnumtag from beas_aplatz &
   where aplatz_id=N'<str_parm.s_parm1>'
+
 end event
 
 windowevent update
