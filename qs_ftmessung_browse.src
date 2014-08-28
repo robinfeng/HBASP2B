@@ -12,9 +12,11 @@ select mansernum from oitm &
 if <wert1> = Y then
 visible=udf1=1
 protect=udf1=0
+setglobal=g_sn_man=Y
 else
 visible=udf1=0
 protect=udf1=1
+setglobal=g_sn_man=N
 end if
 
 visible=distnumber=1
@@ -137,18 +139,18 @@ end event
 // 1. S/N is empty, can't open measurement screen
 // 2. S/N can not find in orginal document
 // 3. If find duplicate S/N, can't open measurement screen
-windowevent click b_1
-// 1. S/N is empty, can't open measurement screen
-if <dw_1.item.udf1.value> =  then
-message=error$$S/N is empty, can't open measurement screen.
-return false
-end if
-
-if <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
-messagebox=error$$Can't modify the measurement position, please check the serial number.
-return false
-end if
-end event
+//windowevent click b_1
+//// 1. S/N is empty, can't open measurement screen
+//if <dw_1.item.udf1.value> =  then
+//message=error$$S/N is empty, can't open measurement screen.
+//return false
+//end if
+//
+//if <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
+//messagebox=error$$Can't modify the measurement position, please check the serial number.
+//return false
+//end if
+//end event
 
 // Coding ID: beas_qs_ftmessung_browse_doubleclick
 // By: Robin
@@ -160,15 +162,16 @@ end event
 
 windowevent doubleclick
 // 1. S/N is empty, can't open measurement screen
-if <dw_1.item.udf1.value> =  then
-message=error$$S/N is empty, can't open measurement screen.
+if <global:g_sn_man> = Y and <dw_1.item.udf1.value> =  then
+message=error$beas_qc_1013$S/N is empty, can't open measurement screen.
 return false
 end if
 
-if <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
-messagebox=error$$Can't modify the measurement position, please check the serial number.
+if <global:g_sn_man> = Y and <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
+messagebox=error$beas_qc_1014$Can't modify the measurement position, please check the serial number.
 return false
 end if
+
 end event
 
 windowevent click udf1

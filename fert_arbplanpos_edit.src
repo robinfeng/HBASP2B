@@ -1,0 +1,5 @@
+﻿windowevent open
+[automaticscript]
+dw_1.item.tr2aplatz_t.formatstring=text=process 01 for schedule+Cap,
+[/automaticscript]
+end event
