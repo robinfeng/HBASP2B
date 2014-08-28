@@ -97,7 +97,7 @@ end event
 // Check the serial number and resource
 windowevent click b_3
 setvar=wert1=
-select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
 setvar=res_sn_tag=<wert1>
 setvar=sn_len=%len(<dw_1.item.udf1.value>)
 setvar=wert1=
@@ -121,7 +121,7 @@ end event
 // Check the serial number and resource
 windowevent click b_4
 setvar=wert1=
-select isnull(serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
 setvar=res_sn_tag=<wert1>
 setvar=sn_len=%len(<dw_1.item.udf1.value>)
 setvar=wert1=

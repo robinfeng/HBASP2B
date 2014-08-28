@@ -56,7 +56,7 @@ end event
 // update database to "scraptag"
 windowevent update
 sql=update beas_ftpos set scraptag='<dw_1.item.scraptag.value>', &
-  udf2='<udf2>', udf3='<udf3>'
+  udf2='<udf2>', udf3='<udf3>' &
   where belnr_id=<str_parm.belnr_id,#0> &
   and belpos_id=<str_parm.belpos_id,#0>
 end event

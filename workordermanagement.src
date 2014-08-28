@@ -30,7 +30,10 @@ end function
 // 1. S/N is mandatory if resource is defined as S/N relevant
 // 2. S/N value entry must be one of the S/N of the preforms issued to the WO
 // 3. Need to add a validation in time confirmation that time confirmation can only be saved when the cost element is not empty
+// 4. If the S/N is entered, the confirmed quantity cannot be more than 1
+// 5. Disable quantity confirmation for time type proc 01
 function timerecordingstart
+// messagebox=<menge_gut_rm> <cr_lf> <menge_schlecht_rm> <cr_lf> <typ>
 setvar=wert1=
 //select aplatz_id,udf1 from beas_arbzeit where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> and pos_id=<e_pos_id>
 setvar=l_aplatz=<aplatz_id>
@@ -93,4 +96,17 @@ message=error$beas_tr_$The cost element is mandatory.
 return false
 end if
 //return false
+
+// 4. If the S/N is entered, the confirmed quantity cannot be more than 1
+setvar=qty=%numadd(<menge_gut_rm>,<menge_schlecht_rm>)
+if <l_sn_len> n> 0 and <qty> n<> 1 then
+message=error$beas_tr_$You enter the S/N, therefore the confirmed quantity cannot be more than 1 
+return false
+end if
+
+// 5. Disable quantity confirmation for time type proc 01
+if <typ> = R and <qty> n> 0 then
+message=error$beas_tr_$The time type is "Proc. 01", therefore cannot input the quantity.
+return false
+end if
 end function
