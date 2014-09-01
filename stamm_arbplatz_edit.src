@@ -4,8 +4,7 @@
 windowevent open
 setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
 setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>
-dw_1.item.udf1.dropdown.activate
-dw_1.item.udf1.dropdown.select prccode, prcname from oprc where active='Y'
+
 end event
 
 windowevent postopen
@@ -20,6 +19,16 @@ item.serialnumtag.dropdown.values=Yes=Y,No=N
 select p_serialnumtag into serialnumtag from beas_aplatz &
   where aplatz_id=N'<str_parm.s_parm1>'
 
+etab=moveobject=kosten=udf1_t=nextlinefrom=kstst_id_t 
+etab=moveobject=kosten=udf1=nextlinefrom=kstst_id
+dw_1.item.udf1.dropdown.activate
+dw_1.item.udf1.dropdown.select prccode, prcname from oprc where active='Y'
+
+//select currenct user cost tab right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='17'
+if <wert1> n= 0 then
+    etab=visible=kosten=return false
+end if
 end event
 
 windowevent update

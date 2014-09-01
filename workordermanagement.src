@@ -92,21 +92,25 @@ end if
 
 //messagebox=<timetype_id>
 if <timetype_id> = then
-message=error$beas_tr_$The cost element is mandatory.
+message=error$beas_tr_1004$The cost element is mandatory.
 return false
 end if
 //return false
 
 // 4. If the S/N is entered, the confirmed quantity cannot be more than 1
 setvar=qty=%numadd(<menge_gut_rm>,<menge_schlecht_rm>)
-if <l_sn_len> n> 0 and <qty> n<> 1 then
-message=error$beas_tr_$You enter the S/N, therefore the confirmed quantity cannot be more than 1 
+if <l_sn_len> n> 0 and <qty> n> 1 then
+message=error$beas_tr_1005$You enter the S/N, therefore the confirmed quantity cannot be more than 1 
 return false
 end if
 
 // 5. Disable quantity confirmation for time type proc 01
-if <typ> = R and <qty> n> 0 then
-message=error$beas_tr_$The time type is "Proc. 01", therefore cannot input the quantity.
+// Note: 
+// If "proc. 01" and "proc. 02" set cost element and the time type proc. 01 quantity must be zero
+// messagebox=<barcode>,<trtimetype_id>,<timetype_id>
+select len(trtimetype_id), len(timetype_id) from beas_ftapl where nummer='<barcode>'
+if <typ> = R and <qty> n> 0 and <wert1> n> 0  and <wert2> n> 0 then
+message=error$beas_tr_1006$The time type is "Proc. 01", therefore cannot input the quantity.
 return false
 end if
 end function

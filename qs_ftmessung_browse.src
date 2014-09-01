@@ -57,10 +57,11 @@ select count(*) from beas_qsftmessung &
   and isnull(udf1,'')=N'<dw_1.item.udf1:[dwo-row].value>' &
   and isnull(udf1,'')<>''
 if <wert1> n> 0 then
-
 setglobal=g_sn_error=beas_qc_1006
 setglobal=g_sn_errormessage=S/N entered cannot be duplicated in one QC order.
 goto=end
+else
+setglobal=g_sn_error=Y
 end if
 
 // 3. S/N entered cannot be updated unless the measurement position of the sample has no value
@@ -70,22 +71,27 @@ select count(1) from beas_qsftpos &
   where charge_id=N'<dw_1.item.charge_id.value>' and knd_id=N'<dw_1.item.knd_id:[dwo-row].value>' &
   and len(messwertc)>0
 if <wert1> n> 0 and <global:g_basetyp> n= 20 then
-
 setglobal=g_sn_error=beas_qc_1006
 setglobal=g_sn_errormessage=S/N entered cannot be updated unless the measurement position of the sample has no value.
 goto=end
+else
+setglobal=g_sn_error=Y
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = F then
 setglobal=g_sn_error=beas_qc_1006
 setglobal=g_sn_errormessage=This sample status is Unlocked, you can't update this serial number.
 goto=end
+else
+setglobal=g_sn_error=Y
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = E then
 setglobal=g_sn_error=beas_qc_1006
 setglobal=g_sn_errormessage=This sample status is Blocked, you can't update this serial number.
 goto=end
+else
+setglobal=g_sn_error=Y
 end if
 
 // 2. S/N entered must be within original document (GRPO)
@@ -117,6 +123,8 @@ if <wert1> n= 0 then
 setglobal=g_sn_error=beas_qc_1001
 setglobal=g_sn_errormessage=The Serial Number is error, can't find in goods receipt serial number list(OSRN).
 goto=end
+else
+setglobal=g_sn_error=Y
 end if
 end if
 

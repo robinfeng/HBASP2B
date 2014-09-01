@@ -93,50 +93,50 @@ group by X.serialnum &
 having sum(X.ibt1_quantity)=-1
 end event
 
-// When click Partial receipt button
-// Check the serial number and resource
-windowevent click b_3
-setvar=wert1=
-select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-setvar=res_sn_tag=<wert1>
-setvar=sn_len=%len(<dw_1.item.udf1.value>)
-setvar=wert1=
-select count(1) from beas_ftpos_reservierung &
-  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-  and item='<dw_1.item.udf1.value>'
-setvar=sn_in_reservation=<wert1>
-//messagebox=<inputserialnumber>
-if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-return false
-end if
-
-if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-return false
-end if
-end event
-
-// When click confirm completion button
-// Check the serial number and resource
-windowevent click b_4
-setvar=wert1=
-select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-setvar=res_sn_tag=<wert1>
-setvar=sn_len=%len(<dw_1.item.udf1.value>)
-setvar=wert1=
-select count(1) from beas_ftpos_reservierung &
-  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-  and item='<dw_1.item.udf1.value>'
-setvar=sn_in_reservation=<wert1>
-//messagebox=<inputserialnumber>
-if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-return false
-end if
-
-if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-return false
-end if
-end event
+//// When click Partial receipt button
+//// Check the serial number and resource
+//windowevent click b_3
+//setvar=wert1=
+//select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+//setvar=res_sn_tag=<wert1>
+//setvar=sn_len=%len(<dw_1.item.udf1.value>)
+//setvar=wert1=
+//select count(1) from beas_ftpos_reservierung &
+//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
+//  and item='<dw_1.item.udf1.value>'
+//setvar=sn_in_reservation=<wert1>
+////messagebox=<inputserialnumber>
+//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
+//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
+//return false
+//end if
+//
+//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
+//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
+//return false
+//end if
+//end event
+//
+//// When click confirm completion button
+//// Check the serial number and resource
+//windowevent click b_4
+//setvar=wert1=
+//select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
+//setvar=res_sn_tag=<wert1>
+//setvar=sn_len=%len(<dw_1.item.udf1.value>)
+//setvar=wert1=
+//select count(1) from beas_ftpos_reservierung &
+//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
+//  and item='<dw_1.item.udf1.value>'
+//setvar=sn_in_reservation=<wert1>
+////messagebox=<inputserialnumber>
+//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
+//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
+//return false
+//end if
+//
+//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
+//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
+//return false
+//end if
+//end event

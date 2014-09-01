@@ -3,6 +3,8 @@
  setvar=wert1   
  select oitm.ItmsGrpCod from OITM where ItemCode='<dw_1.item.itemcode.value>'
    if <wert1> = '110' or <wert1> = '108' then
-      messagebox=<dw_1.item.itemcode.value>-<dw_1.item.itemname.value> cannot maintain in this screen
+      messagebox=error$id=beas_mm_1001<tab>&
+      text=<dw_1.item.itemcode.value>-<dw_1.item.itemname.value> cannot maintain in this screen<tab>&
+      popup=true
   return failure
- end if 
+ end if
