@@ -1,0 +1,23 @@
+aplatz_id,bez,gruppe,resourcetype,auswaertsbearbeitung,kapaplanung,apsview,kapachecklimit,optimized_id,sollkapstdtag,anzmaschpers,layerplan,p_serialnumtag
+AOC01_L             ,AOC01 AO Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL, 
+AOC01_M             ,AOC01 AO, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL, 
+CAB01_L             ,CAB01 Crabonization Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL, 
+CAB01_M             ,CAB01 Crabonization, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL, 
+CLN01               ,CLN01 Hand Cleaning, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+COST                ,Cost transfer, ,NULL,J,0,0,N,0,8,1,NULL,NULL
+CVD01_L             ,CVD01 CVD Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL,N
+CVD01_M             ,CVD01 CVD, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL, 
+DSG01               ,DSG01 Grinding, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL,N
+HTT01_L             ,HTT01 HTT01 Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL,N
+HTT01_M             ,HTT01 HTT01, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL,Y
+HTT02_L             ,HTT02 HTT02 Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL,NULL
+HTT02_M             ,HTT02 HTT02, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL, 
+IMP01_L             ,IMP01 Impregnation Setup, ,Setup               ,NULL,1,1,J,NULL,8,1,NULL,NULL
+IMP01_M             ,IMP01 Impregnation, ,Heat_Treat          ,NULL,1,1,J,NULL,24,2,NULL, 
+MAK01               ,MAK01 Ink Marking 1, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+MAK02               ,MAK02 Ink Marking 2, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+MIL01               ,MIL01 Milling, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+PNT01               ,PNT01 AO Painting, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+REL01               ,Material Release, ,Other               ,NULL,1,1,J,NULL,8,1,NULL,N
+RVT01               ,RVT01 Rivet, ,Machining           ,NULL,1,1,J,NULL,8,2,NULL, 
+STE01               ,Store, ,Other               ,NULL,1,1,J,NULL,8,1,NULL,NULL
