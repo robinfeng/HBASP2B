@@ -174,7 +174,9 @@ end if
 // Remark:Add user define field of OITM on be.as Item Master Data screen
 // By:Robin
 // Date:20140808
-sql=update oitm set u_D_sn_comp_item=N'<D_sn_comp_item>',u_M_cmp_version=N'<M_cmp_version>' where itemcode=N'<str_parm.s_parm1>'
+sql=update oitm set u_D_sn_comp_item=N'<D_sn_comp_item>',&
+  u_M_cmp_version=N'<M_cmp_version>' &
+  where itemcode=N'<str_parm.s_parm1>'
 
 end event
 
