@@ -1,11 +1,18 @@
 ﻿windowevent postopen
-//select currenct user general tab right, if no right this tab will be disable.
+//select currenct user scrap right, if no right this tab will be disable.
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='18'
 if <wert1> n= 0 then
 	dw_1.item.menge_schlecht_rm_t.visible=false
 	dw_1.item.menge_schlecht_rm.visible=false
 	dw_1.item.c_menge_schlecht_rm.visible=false
    menu=disable=Aus&schuss
+end if
+//select currenct user cost center right, if no right this tab will be disable.
+select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='19'
+if <wert1> n= 0 then
+	dw_1.item.kstst_id.visible=false
+	dw_1.item.kstst_id_t.visible=false
+	dw_1.item.kstst_id_p.visible=false
 end if
 end event
 
