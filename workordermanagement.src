@@ -33,6 +33,11 @@ end function
 // 4. If the S/N is entered, the confirmed quantity cannot be more than 1
 // 5. Disable quantity confirmation for time type proc 01
 function timerecordingstart
+if <anfzeit> <> <docdate> then
+messagebox=error$beas_tr_1007$The "From Date" and the "Valuation Date" must be same.
+return false
+end if
+
 // messagebox=<menge_gut_rm> <cr_lf> <menge_schlecht_rm> <cr_lf> <typ>
 setvar=wert1=
 //select aplatz_id,udf1 from beas_arbzeit where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> and pos_id=<e_pos_id>

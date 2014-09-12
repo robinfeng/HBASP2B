@@ -13,6 +13,7 @@ if <wert1> n= 0 then
 	dw_1.item.kstst_id.visible=false
 	dw_1.item.kstst_id_t.visible=false
 	dw_1.item.kstst_id_p.visible=false
+   dw_1.item.kstst_id1_t.visible=false
 end if
 end event
 
