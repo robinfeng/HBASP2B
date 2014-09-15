@@ -11,7 +11,7 @@ function transfer
 if <sys_dwname> = mw_manuell_buchen then
 	select U_M_WarehouseCost,U_M_ConsiVendor into f_whcost,f_consivendor from owhs where whscode=N'<whscode>'
 	select U_M_WarehouseCost,U_M_ConsiVendor into t_whcost,t_consivendor from owhs where whscode=N'<whscode_zu>'
-	if <f_whcost> = <t_whcost> and <f_consivendor> = <t_consivendor> then
+	if <f_whcost> <> <t_whcost> and <f_consivendor> <> <t_consivendor> then
 		//messagebox=<f_whcost>,<f_consivendor><cr_lf><t_whcost>,<t_consivendor>
 		message=error$beas_mm_1007$The "warehouse cost" and "consignment vendor" of "from warehouse" and "to warehouse" fields must be same.
 		return false
