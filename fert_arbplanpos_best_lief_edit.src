@@ -1,6 +1,7 @@
-﻿// Rewrite the Create Service PO function
-// robin.feng@tech-sonic.net
-// 2014.7.7
+﻿// Code ID: beas_fert_arbplanpos_best_lief_edit_postopen
+// By: Robin Feng
+// Date: 2014.7.7
+// Description: Rewrite the Create Service PO function
 windowevent postopen
 select timetype_id from beas_ftapl &
   where belnr_id=<str_parm.belnr_id,#0> &
@@ -91,7 +92,10 @@ end if
 
 end event
 
-// Change the vendor
+// Code ID: beas_fert_arbplanpos_best_lief_edit_itemchange_lieferant
+// By: Robin Feng
+// Date: N/A
+// Description: Change the vendor
 windowevent itemchange lieferant
 // Get currency of the vendor
 // The priority of currency is:

@@ -1,12 +1,17 @@
-﻿// Add serial number tag
-// robin.feng@tech-sonic.net
-// 2014.7.5
+﻿// Code ID: beas_stamm_arbplatz_edit_open
+// By: Robin Feng
+// Date: 2014.7.5
+// Description: Add serial number tag
 windowevent open
 setvar=ll_x=<dw_1.item.mehrauftragsbedienung_t.x>
 setvar=ll_y=<dw_1.item.mehrauftragsbedienung_t.y>
 
 end event
 
+// Code ID: beas_stamm_arbplatz_edit_postopen
+// By: Robin Feng
+// Date: 2014.7.5
+// Description: Add serial number tag
 windowevent postopen
 //messagebox=<ll_x><cr_lf><ll_y>
 etab=addnewobject=stamm=serialnumtag=column=userfield1=nextlinefrom=same_startendtime
@@ -31,6 +36,10 @@ if <wert1> n= 0 then
 end if
 end event
 
+// Code ID: beas_stamm_arbplatz_edit_update
+// By: Robin Feng
+// Date: 2014.7.5
+// Description: Update serial number tag
 windowevent update
 sql=update beas_aplatz set p_serialnumtag='<dw_1.item.serialnumtag.value>' &
   where aplatz_id=N'<str_parm.s_parm1>'

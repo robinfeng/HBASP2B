@@ -6,8 +6,8 @@ windowevent itemchanged 28 22
 //messagebox=<item.5.value>,<item.28.col.1.value>
 select isnull(u_m_warehousecost,3) from owhs where whscode=N'<item.28.col.1.value>'
 if <wert1> n= 1 then
-item.28.col.22.value=0
-message=error$beas_md_1002$The warehouse set "1-Must be zero",the cost price always be 0
-return false
+	item.28.col.22.value=0
+	message=error$beas_md_1002$The warehouse set "1-Must be zero",the cost price always be 0
+	return false
 end if
 end event

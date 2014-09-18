@@ -6,9 +6,9 @@ windowevent postopen
 select count(1) from oitm &
 where mansernum='Y' and itemcode=N'<dw_1.item.beas_ftpos_itemcode.value>'
 if <wert1> n= 1 then
-dw_2.item.distnumber_t.text=Serial
-dw_2.item.mnfserial_t.text=s/n attribute 1
-dw_2.item.lotnumber_t.text=s/n attribute 2
+	dw_2.item.distnumber_t.text=Serial
+	dw_2.item.mnfserial_t.text=s/n attribute 1
+	dw_2.item.lotnumber_t.text=s/n attribute 2
 end if
 end event
 
@@ -97,6 +97,5 @@ if <wert1> n= 0 then
   message=error$beas_tr_1003$The Serial Number is error, can't find the s/n in current work order related serial management item goods issue.
   return false
 end if
-
 
 end event

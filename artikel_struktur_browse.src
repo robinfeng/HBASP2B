@@ -1,4 +1,7 @@
-﻿windowevent doubleclick 
+﻿// Code ID: beas_artikel_struktur_browse_doubleclick
+// By: Robin Feng
+// Date: N/A
+windowevent doubleclick 
 
  setvar=wert1   
  select oitm.ItmsGrpCod from OITM where ItemCode='<dw_1.item.itemcode.value>'

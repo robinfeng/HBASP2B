@@ -1,4 +1,8 @@
-﻿windowevent postopen
+﻿// Code ID: beas_artikel_edit_postopen
+// By: Will
+// Date: N/A
+// Description: Customization authrization of beas
+windowevent postopen
 //protect=u_match=1
 protect=itmsgrpcod=1
 protect=itemtype=1
@@ -117,7 +121,10 @@ select u_D_sn_comp_item,U_M_cmp_version into D_sn_comp_item, M_cmp_version from 
 
 end event
 
-
+// Code ID: beas_artikel_edit_open
+// By: Will
+// Date: N/A
+// Description: The screen format
 windowevent open
  // expense / capital project item group cannot edit at this screen.
    if <dw_1.item.itmsgrpcod.value> n= 110 then 
@@ -149,7 +156,10 @@ dw_1.item.u_gruppe.formatstring=berr=255,mandatory=true,
 [/automaticscript]
 end event
 
-
+// Code ID: beas_artikel_edit_update
+// By: Will
+// Date: N/A
+// Description: 
 windowevent update
 
 //	Row material / Semi-productor / Finished Goods cost should great than 0							
@@ -163,7 +173,6 @@ if <wert1> n> 0 then
 
      end if 
 end if 
-
 
 if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and <dw_1.item.frozenfor.value> <> 'Y' then
       messagebox=error$id=beas_mm_1005<tab>&
@@ -187,12 +196,15 @@ di_item=u_D_sn_comp_item=<D_sn_comp_item>
 di_item=u_M_cmp_version=<M_cmp_version>
 di_item=update
 if <return> n= -1 then
-destroy=di_item
-return false
+  destroy=di_item
+  return false
 end if
 destroy=di_item
 end event
 
+// Code ID: beas_artikel_edit_itemchange_evalsystem
+// By: Will
+// Date: N/A
 windowevent itemchange evalsystem
       messagebox=error$id=beas_mm_1004<tab>&
       text=The Standard evaluation only<tab>&
@@ -203,6 +215,9 @@ windowevent itemchange evalsystem
          dw_1.item.evalsystem.redraw
 end event
 
+// Code ID: beas_artikel_edit_itemchange_invntitem
+// By: Will
+// Date: N/A
 windowevent itemchange invntitem		
 
     if <dw_1.item.itmsgrpcod.value> n= 101 then   
@@ -215,10 +230,11 @@ windowevent itemchange invntitem
          dw_1.item.mansernum.redraw
     end if 
 
-
 end event
 
-
+// Code ID: beas_artikel_edit_close
+// By: Will
+// Date: N/A
 windowevent close
 
 if <dw_1.item.evalsystem.value> <> 'S'  and <dw_1.item.frozenfor.value> <> 'Y' then

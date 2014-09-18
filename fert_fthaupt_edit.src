@@ -1,4 +1,7 @@
-﻿// The LOT number used by serial number of finish goods
+﻿// Code ID: beas_fert_fthaupt_edit_postopen
+// By: Robin Feng
+// Date: N/A
+// Description: The LOT number used by serial number of finish goods
 windowevent postopen
 protect=udf1=1
 end event

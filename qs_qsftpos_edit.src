@@ -9,8 +9,8 @@ select t2.ManSerNum,t1.typ from beas_qsfthaupt t1 join oitm t2 &
   where t1.charge_id='<dw_1.item.charge_id.value>'
 setvar=len_udf1=%len(<parent.dw_1.item.udf1.value>)
 if <len_udf1> n= 0 and <wert1> = Y then
-message=error$beas_qc_1007$The serial number is mandatory
-return false
+	message=error$beas_qc_1007$The serial number is mandatory
+	return false
 end if
 
 setvar=wert1=
@@ -18,20 +18,19 @@ select U_q_sn_udf from [@zqsrn] where code=N'<dw_1.item.qs_id.value>'
 setvar=sn_udf=<wert1>
 select count(1) from CUFD where TableID='osrn' and AliasID=N'<wert1>'
 if <wert1> n= 1 then
-select itemcode from beas_qsfthaupt where charge_id=N'<parent.dw_1.item.charge_id.value>'
+	select itemcode from beas_qsfthaupt where charge_id=N'<parent.dw_1.item.charge_id.value>'
 
-if <messwertc> = then
-#sqlscript
-update osrn set u_<sn_udf>=NULL
-where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
-#end
-else
-#sqlscript
-update osrn set u_<sn_udf>=<messwertc,#0.000000>
-where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
-#end
-end if
-message=info$beas_qc_1003$The <dw_1.item.qs_id.value> of S/N(<parent.dw_1.item.udf1.value>) updated.
+	if <messwertc> = then
+		#sqlscript
+		update osrn set u_<sn_udf>=NULL
+		where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
+		#end
+	else
+		#sqlscript
+		update osrn set u_<sn_udf>=<messwertc,#0.000000>
+		where itemcode=N'<wert1>' and distnumber=N'<parent.dw_1.item.udf1.value>'
+		#end
+	end if
+	message=info$beas_qc_1003$The <dw_1.item.qs_id.value> of S/N(<parent.dw_1.item.udf1.value>) updated.
 end if
 end event
-

@@ -1,9 +1,10 @@
-﻿// Add scrap order tag to work order position
-// robin.feng@tech-sonic.net
-// 2014.7.3
+﻿// Code ID: beas_fert_ftpos_edit_itemchange_scraptag
+// By: Robin
+// Date: 2014.7.3
+// Descraption: Add scrap order tag to work order position
 windowevent itemchange scraptag
 
-// TODO: define the scrap order wip variance account
+// Define the scrap order wip variance account
 select u_parameter1 from [@zc001] where u_variablename=N'Z_SCRAP_Account'
 
 setvar=scrap_acct_wip_var=<wert1>
@@ -11,37 +12,33 @@ select gel_menge * isnull(me_umr,1) from beas_ftpos &
   where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
 setvar=complete_quantity=<wert1>
 if <dw_1.item.scraptag.value> = 'Y' and <complete_quantity> n= 0 then
-dw_1.item.account_variance.value=<scrap_acct_wip_var>
+	dw_1.item.account_variance.value=<scrap_acct_wip_var>
 end if
 
 if <dw_1.item.scraptag.value> = 'Y' and <complete_quantity> n<> 0 then
-message=error$wo_1001$The finish goods was receipted, can not scrap this work order.
-setitem=scraptag='N'
-return false
+	message=error$wo_1001$The finish goods was receipted, can not scrap this work order.
+	setitem=scraptag='N'
+	return false
 end if
 
 if <dw_1.item.scraptag.value> = 'N' then
-// WIP-Konto der Baugruppe
-sbodiapi=getaccount=typ=wipacct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
-setitem=account_wip=<value>
-select case when isnull(u_beas_wip,'N') in ('J','Y','T','1') then 'Y' else 'N'  end from oact where acctcode='<account_wip>'
-if <wert1> <> Y then
-   messagebox=fehler$ftposstd02355$Das angegebene WIA-Konto ist nicht als WIA-Konto definiert! Bitte Datenprüfung starten und korrigieren!
-end if
-// WIP-Difference der Baugruppe
-sbodiapi=getaccount=typ=wipvaracct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
-setitem=account_variance=<value>
+	// WIP-Konto der Baugruppe
+	sbodiapi=getaccount=typ=wipacct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
+	setitem=account_wip=<value>
+	select case when isnull(u_beas_wip,'N') in ('J','Y','T','1') then 'Y' else 'N'  end from oact where acctcode='<account_wip>'
+	if <wert1> <> Y then
+	   messagebox=fehler$ftposstd02355$Das angegebene WIA-Konto ist nicht als WIA-Konto definiert! Bitte Datenprüfung starten und korrigieren!
+	end if
+	// WIP-Difference der Baugruppe
+	sbodiapi=getaccount=typ=wipvaracct<tab>itemcode=<itemcode><tab>whscode=<whscode><tab>source=fert_ftpos_edit.src.itemcode.itemchanged
+	setitem=account_variance=<value>
 end if
 end event
 
-//windowevent itemchange itemcode
-//// binding the db field to form field
-//update beas_ftpos set acc_wip_var_bak=account_variance &
-//  where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
-//end event
-
-// create a scrap tag for scrap order
-// define the position of the field in this form
+// Code ID: beas_fert_ftpos_edit_open
+// By: Robin Feng
+// Date: 2014.7.3
+// Description: Create a scrap tag for scrap order, define the position of the field in this form
 windowevent open
 setvar=ll_x=<item.startzeit_struktur.x>
 setvar=ll_y=<item.startzeit_struktur.y>
@@ -59,7 +56,10 @@ dw_1.item.lieferdatum_t.formatstring=text=Finish date,
 [/automaticscript]
 end event
 
-// update database to "scraptag"
+// Code ID: beas_fert_ftpos_edit_update
+// By: Robin
+// Date: 2014.7.3
+// Description: Update database to "scraptag"
 windowevent update
 sql=update beas_ftpos set p_scraptag='<dw_1.item.scraptag.value>' &
 //  udf2='<udf2>', udf3='<udf3>' &
