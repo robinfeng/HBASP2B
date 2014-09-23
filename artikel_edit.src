@@ -156,24 +156,11 @@ dw_1.item.u_gruppe.formatstring=berr=255,mandatory=true,
 [/automaticscript]
 end event
 
-// Code ID: beas_artikel_edit_update
-// By: Will
-// Date: N/A
-// Description: 
-windowevent update
-
-//	Row material / Semi-productor / Finished Goods cost should great than 0							
-select count(*) from OITM t0 inner join OITB t1 on t0.ItmsGrpCod =t1.ItmsGrpCod where t0.ItemCode='<dw_1.item.itemcode.value>' and t1.U_m_zc='N'
-if <wert1> n> 0 then
-     if <dw_1.item.avgprice.value> n= 0  and <dw_1.item.frozenfor.value> <> 'Y'  then  
-      messagebox=error$id=beas_mm_1006<tab>&
-      text=This item cost must great than 0, else it will be block in Transaction document<tab>&
-      popup=true
-//				messagebox=**$This item cost must great than 0, else it will be block in Transaction document
-
-     end if 
-end if 
-
+// Code ID: beas_artikel_edit_preupdate
+// By: Robin
+// Date: 2014.9.23
+// Description: Update user define fields
+windowevent preupdate
 if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and <dw_1.item.frozenfor.value> <> 'Y' then
       messagebox=error$id=beas_mm_1005<tab>&
       text=The unit name in Inventory Tab is mandatory information for inventory item<tab>&
@@ -182,24 +169,41 @@ if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and 
     return false
 end if
 
-// Remark:Add user define field of OITM on be.as Item Master Data screen
-// By:Robin
-// Date:20140808
-//sql=update oitm set u_D_sn_comp_item=N'<D_sn_comp_item>',&
-//  u_M_cmp_version=N'<M_cmp_version>' &
-//  where itemcode=N'<str_parm.s_parm1>'
-
 declare=di_item=ue_api_sbo
 di_item=getbusinessobject=oitems
 di_item=getbykey=<dw_1.item.itemcode.value>
-di_item=u_D_sn_comp_item=<D_sn_comp_item>
-di_item=u_M_cmp_version=<M_cmp_version>
+di_item=u_D_sn_comp_item=<dw_1.item.d_sn_comp_item.value>
+di_item=u_M_cmp_version=<dw_1.item.m_cmp_version.value>
 di_item=update
 if <return> n= -1 then
   destroy=di_item
   return false
 end if
 destroy=di_item
+
+setvar=error_id=
+setvar=warehouses=
+
+declare=ds_whscost=ue_datastorevalues
+ds_whscost=select t1.whscode, t1.avgprice from oitw t1 &
+where t1.itemcode=N'<dw_1.item.itemcode.value>'
+
+for=loop=1=<ds_whscost.rowcount>
+    ds_whscost=setrow=<loop>
+	select t1.U_M_WarehouseCost from owhs t1 &
+		where t1.whscode=N'<ds_whscost.whscode:[loop]>'
+	if <wert1> n= 3 and <ds_whscost.avgprice:[loop]> n= 0 then
+		setvar=error_id=beas_mm_1008
+		setvar=warehouses='<ds_whscost.whscode:[loop]>' <warehouses>
+	end if
+next
+destroy=ds_whscost
+
+if <error_id> = beas_mm_1008 then
+	messagebox=error$id=beas_mm_1008<tab>&
+	text=Item cost in (<warehouses>) warehouse is missing, please notify finance to update.<tab>&
+	popup=true
+end if
 end event
 
 // Code ID: beas_artikel_edit_itemchange_evalsystem

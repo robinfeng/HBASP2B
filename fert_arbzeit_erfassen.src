@@ -1,4 +1,10 @@
-﻿// Code ID: beas_fert_arbzeit_erfassen_postopen
+﻿windowevent open
+[automaticscript]
+dw_1.item.menge_gut_rm_t.formatstring=text=Quantity,
+[/automaticscript]
+end event
+
+// Code ID: beas_fert_arbzeit_erfassen_postopen
 // By: Robin Feng
 // Date: N/A
 // Description: Customization authrization for scrap fields and cost center.

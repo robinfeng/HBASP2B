@@ -3,20 +3,20 @@
 // Date: 20140725
 // Description: S/N can be entered by sample in QC order for S/N managed item
 windowevent postopen
-
+dw_1.item.udf1.width=500
 setglobal=g_sn_error=Y
 setglobal=g_sn_errormessage=
 
 select mansernum from oitm &
   where itemcode=N'<parent.dw_1.item.itemcode.value>'
 if <wert1> = Y then
-  visible=udf1=1
-  protect=udf1=0
-  setglobal=g_sn_man=Y
+visible=udf1=1
+protect=udf1=0
+setglobal=g_sn_man=Y
 else
-  visible=udf1=0
-  protect=udf1=1
-  setglobal=g_sn_man=N
+visible=udf1=0
+protect=udf1=1
+setglobal=g_sn_man=N
 end if
 
 visible=distnumber=1
@@ -57,11 +57,11 @@ select count(*) from beas_qsftmessung &
   and isnull(udf1,'')=N'<dw_1.item.udf1:[dwo-row].value>' &
   and isnull(udf1,'')<>''
 if <wert1> n> 0 then
-  setglobal=g_sn_error=beas_qc_1006
-  setglobal=g_sn_errormessage=S/N entered cannot be duplicated in one QC order.
-  goto=end
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=S/N entered cannot be duplicated in one QC order.
+goto=end
 else
-  setglobal=g_sn_error=Y
+setglobal=g_sn_error=Y
 end if
 
 // 3. S/N entered cannot be updated unless the measurement position of the sample has no value
@@ -71,27 +71,27 @@ select count(1) from beas_qsftpos &
   where charge_id=N'<dw_1.item.charge_id.value>' and knd_id=N'<dw_1.item.knd_id:[dwo-row].value>' &
   and len(messwertc)>0
 if <wert1> n> 0 and <global:g_basetyp> n= 20 then
-  setglobal=g_sn_error=beas_qc_1006
-  setglobal=g_sn_errormessage=S/N entered cannot be updated unless the measurement position of the sample has no value.
-  goto=end
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=S/N entered cannot be updated unless the measurement position of the sample has no value.
+goto=end
 else
-  setglobal=g_sn_error=Y
+setglobal=g_sn_error=Y
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = F then
-  setglobal=g_sn_error=beas_qc_1006
-  setglobal=g_sn_errormessage=This sample status is Unlocked, you can't update this serial number.
-  goto=end
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=This sample status is Unlocked, you can't update this serial number.
+goto=end
 else
-  setglobal=g_sn_error=Y
+setglobal=g_sn_error=Y
 end if
 
 if <dw_1.item.pruefkz:[dwo-row].value> = E then
-  setglobal=g_sn_error=beas_qc_1006
-  setglobal=g_sn_errormessage=This sample status is Blocked, you can't update this serial number.
-  goto=end
+setglobal=g_sn_error=beas_qc_1006
+setglobal=g_sn_errormessage=This sample status is Blocked, you can't update this serial number.
+goto=end
 else
-  setglobal=g_sn_error=Y
+setglobal=g_sn_error=Y
 end if
 
 // 2. S/N entered must be within original document (GRPO)
@@ -111,32 +111,32 @@ select mansernum from oitm &
 //message=<parent.dw_1.item.typ.value><cr_lf><wert1>
 // If goods receipt an item with serial number management
 if <wert1> = Y and <global:g_basetyp> n= 20 and <item.udf1.value> <> then
-  select count(1) from beas_qsfthaupt t1, oitl t2, itl1 t3, osrn t4 &
-    where t1.basetype=<global:g_basetyp> and t1.charge_id=N'<dw_1.item.charge_id.value>' &
-    and t1.basedocentry=t2.docentry and t1.baselinenum=t2.docline &
-    and t2.logentry=t3.logentry &
-    and t4.itemcode=N'<parent.dw_1.item.itemcode.value>' &
-    and t4.sysnumber=t3.sysnumber &
-    and t4.distnumber=N'<dw_1.item.udf1:[dwo-row].value>'
+select count(1) from beas_qsfthaupt t1, oitl t2, itl1 t3, osrn t4 &
+  where t1.basetype=<global:g_basetyp> and t1.charge_id=N'<dw_1.item.charge_id.value>' &
+  and t1.basedocentry=t2.docentry and t1.baselinenum=t2.docline &
+  and t2.logentry=t3.logentry &
+  and t4.itemcode=N'<parent.dw_1.item.itemcode.value>' &
+  and t4.sysnumber=t3.sysnumber &
+  and t4.distnumber=N'<dw_1.item.udf1:[dwo-row].value>'
 
-  if <wert1> n= 0 then
-    setglobal=g_sn_error=beas_qc_1001
-    setglobal=g_sn_errormessage=The Serial Number is error, can't find in goods receipt serial number list(OSRN).
-    goto=end
-  else
-    setglobal=g_sn_error=Y
-  end if
+if <wert1> n= 0 then
+setglobal=g_sn_error=beas_qc_1001
+setglobal=g_sn_errormessage=The Serial Number is error, can't find in goods receipt serial number list(OSRN).
+goto=end
+else
+setglobal=g_sn_error=Y
+end if
 end if
 
 [end]
 //messagebox=<global:g_sn_error>
 if <global:g_sn_error> = Y then
-  message=info$beas_qc_1002$The entried Serial Number is ok.
-  return true
+message=info$beas_qc_1002$The entried Serial Number is ok.
+return true
 else
-  setitem=udf1=<l_udf1>
-  message=error$<global:g_sn_error>$<global:g_sn_errormessage>
-  return false
+setitem=udf1=<l_udf1>
+message=error$<global:g_sn_error>$<global:g_sn_errormessage>
+return false
 end if
 end event
 
@@ -171,23 +171,19 @@ end event
 windowevent doubleclick
 // 1. S/N is empty, can't open measurement screen
 if <global:g_sn_man> = Y and <dw_1.item.udf1.value> =  then
-  message=error$beas_qc_1013$S/N is empty, can't open measurement screen.
-  return false
+message=error$beas_qc_1013$S/N is empty, can't open measurement screen.
+return false
 end if
 
 if <global:g_sn_man> = Y and <global:g_sn_error> = N and <global:g_basetyp> n= 20 then
-  messagebox=error$beas_qc_1014$Can't modify the measurement position, please check the serial number.
-  return false
+messagebox=error$beas_qc_1014$Can't modify the measurement position, please check the serial number.
+return false
 end if
 
 end event
 
-// Coding ID: beas_qs_ftmessung_browse_udf1
-// By: Robin
-// Date: N/A
-// Description: 
 windowevent click udf1
 if <item.udf1.value> = then
-  item.udf1.value=<dw_1.item.distnumber.value>
+item.udf1.value=<dw_1.item.distnumber.value>
 end if
 end event
