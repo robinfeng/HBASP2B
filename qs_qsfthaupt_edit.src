@@ -19,19 +19,19 @@ end event
 windowevent itemchange gutmenge
 
 if <dw_1.item.basetype.value> n= 20 then
-	select count(1) from pdn1 t1 &
-	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-	if <wert1> n= 1 then
-		select owhs.whscode &
-		from owhs,oitw &
-		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-		and isnull(owhs.u_beas_lck,'') <> 'W' and owhs.whscode<>'<whscode>' &
-		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>' &
-		order by owhs.whscode
-		setitem=gutwhscode=<wert1>
-		//gutwhscode=protect=1
-	end if
+select count(1) from pdn1 t1 &
+  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+if <wert1> n= 1 then
+select owhs.whscode &
+from owhs,oitw &
+where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
+and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
+and isnull(owhs.u_beas_lck,'') <> 'W' and owhs.whscode<>'<whscode>' &
+and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>' &
+order by owhs.whscode
+setitem=gutwhscode=<wert1>
+//gutwhscode=protect=1
+end if
 end if
 end event
 
@@ -42,17 +42,17 @@ end event
 // default block warehouse: consignment block warehouse
 windowevent itemchange schlechtmenge
 if <dw_1.item.basetype.value> n= 20 then
-	select count(1) from pdn1 t1 &
-	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-	if <wert1> n= 1 then
-		select owhs.whscode &
-		from owhs,oitw &
-		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-		and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
-		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
-		setitem=schlechtwhscode=<wert1>
-		//schlechtwhscode=protect=1
-	end if
+select count(1) from pdn1 t1 &
+  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+if <wert1> n= 1 then
+select owhs.whscode &
+from owhs,oitw &
+where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
+and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
+and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
+and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
+setitem=schlechtwhscode=<wert1>
+//schlechtwhscode=protect=1
+end if
 end if
 end event

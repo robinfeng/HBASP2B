@@ -9,13 +9,23 @@ end event
 // Date: N/A
 // Description: Customization authrization for scrap fields and cost center.
 windowevent postopen
+// Disable 2 buttons "partial receipt" and "confirm completetion", when open from work order structure
+if <ctyp> = fa then
+//  messagebox=error$id=beas_tr_1008<tab>&
+//  text=Disable "create time receipt" on this screen! <cr_lf> &
+//  Enable "update time receipt" on this screen! <tab>&
+//  popup=true
+  menu=disable=Teilmelden
+  menu=disable=Fertigmelden
+  menu=disable=Aus&schuss
+end if
+
 //select currenct user scrap right, if no right this tab will be disable.
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='18'
 if <wert1> n= 0 then
 	dw_1.item.menge_schlecht_rm_t.visible=false
 	dw_1.item.menge_schlecht_rm.visible=false
 	dw_1.item.c_menge_schlecht_rm.visible=false
-   menu=disable=Aus&schuss
 end if
 //select currenct user cost center right, if no right this tab will be disable.
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='19'
@@ -23,15 +33,8 @@ if <wert1> n= 0 then
 	dw_1.item.kstst_id.visible=false
 	dw_1.item.kstst_id_t.visible=false
 	dw_1.item.kstst_id_p.visible=false
-   dw_1.item.kstst_id1_t.visible=false
+  dw_1.item.kstst_id1_t.visible=false
 end if
-end event
-
-// Coding ID: beas_fert_arbzeit_erfassen_itemchange_barcode
-// By: robin.feng@tech-sonic.net
-// Date: 20140704
-// Description: 
-windowevent itemchange barcode
 // Disable the "resource" field
 item.aplatz_id=protect=1
 item.aplatz_id_p=protect=1
@@ -39,6 +42,14 @@ item.aplatz_id_p.visible=0
 // Disable the "cost element" field
 item.timetype_id=protect=1
 item.timetype_id_p.visible=0
+end event
+
+// Coding ID: beas_fert_arbzeit_erfassen_itemchange_barcode
+// By: robin.feng@tech-sonic.net
+// Date: 20140704
+// Description: 
+windowevent itemchange barcode
+
 // Add dropdown list to "serial number" field
 item.udf1.dropdown.activate
 //item.udf1.edit.update=no
@@ -122,50 +133,68 @@ group by X.serialnum &
 having sum(X.ibt1_quantity)=-1
 end event
 
-//// When click Partial receipt button
-//// Check the serial number and resource
-//windowevent click b_3
-//setvar=wert1=
-//select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-//setvar=res_sn_tag=<wert1>
-//setvar=sn_len=%len(<dw_1.item.udf1.value>)
-//setvar=wert1=
-//select count(1) from beas_ftpos_reservierung &
-//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-//  and item='<dw_1.item.udf1.value>'
-//setvar=sn_in_reservation=<wert1>
-////messagebox=<inputserialnumber>
-//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-//return false
-//end if
-//
-//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-//return false
-//end if
-//end event
-//
-//// When click confirm completion button
-//// Check the serial number and resource
-//windowevent click b_4
-//setvar=wert1=
-//select isnull(p_serialnumtag,'N') from beas_aplatz where aplatz_id=N'<dw_1.item.aplatz_id.value>'
-//setvar=res_sn_tag=<wert1>
-//setvar=sn_len=%len(<dw_1.item.udf1.value>)
-//setvar=wert1=
-//select count(1) from beas_ftpos_reservierung &
-//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-//  and item='<dw_1.item.udf1.value>'
-//setvar=sn_in_reservation=<wert1>
-////messagebox=<inputserialnumber>
-//if <res_sn_tag> = 'Y' and <sn_len> n= 0 then
-//message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
-//return false
-//end if
-//
-//if <res_sn_tag> = 'Y' and <sn_in_reservation> n= 0 then
-//message=error$beas_tr_1002$The Serial Number is error, can't find the s/n in current work order s/n reservation list.
-//return false
-//end if
-//end event
+// Code ID: beas_fert_arbzeit_erfassen_click_b_3
+// By: Robin Feng
+// Date: 2014.10.10
+// Description: If click the “partial receipt” button (none final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be less and equal as Planned Qty
+windowevent click b_3
+if <ctyp> =  then
+  select <sollmenge> - (<gutmenge>+<schlechtmenge>+<menge_gut_rm>+<menge_schlecht_rm>)
+//  messagebox=Test for "7.2.2.1	Time receipts validation when click “partial receipt” button" <cr_lf> &
+//    Planned Qty: <sollmenge> <cr_lf> &
+//    Completed Yield Qty: <gutmenge> <cr_lf> &
+//    Completed Scrap Qty: <schlechtmenge> <cr_lf> &
+//    Yield Qty: <menge_gut_rm> <cr_lf> &
+//    Scrap Qty: <menge_schlecht_rm> <cr_lf> &
+//    Avaliable Qty: <wert1>
+  if <wert1> n< 0 then
+    messagebox=error$beas_tr_1009$Partial time receipt error, Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be less and equal as Planned Qty!
+    return false
+  end if
+end if
+end event
+
+// Code ID: beas_fert_arbzeit_erfassen_click_b_4
+// By: Robin Feng
+// Date: 2014.10.10
+// Description: If click the “comfirm completion” button (final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be equal as Planned Qty
+windowevent click b_4
+if <ctyp> =  then
+  select <sollmenge> - (<gutmenge>+<schlechtmenge>+<menge_gut_rm>+<menge_schlecht_rm>)
+//  messagebox=Test for "7.2.2.2	Time receipts validation when click “comfirm completion” button <cr_lf> &
+//    Planned Qty: <sollmenge> <cr_lf> &
+//    Completed Yield Qty: <gutmenge> <cr_lf> &
+//    Completed Scrap Qty: <schlechtmenge> <cr_lf> &
+//    Yield Qty: <menge_gut_rm> <cr_lf> &
+//    Scrap Qty: <menge_schlecht_rm> <cr_lf> &
+//    Avaliable Qty: <wert1>
+  if <wert1> n<> 0 then
+    messagebox=error$beas_tr_1010$Final time confirm error, Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be equal as Planned Qty!
+    return false
+  end if
+end if
+end event
+
+// Code ID: beas_fert_arbzeit_erfassen_click_pers_id_p
+// By: Robin
+// Date: 20141013
+// Description: Person dropdown list can be refresh by time type, need to define the login time type of person first 
+windowevent click pers_id_p
+// R=zeittyp_tr // setup
+// A=zeittyp_te // process
+// N=zeittyp_th // qc
+// H=zeittyp_tn // rework
+//item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_tr=1 and zeittyp_te=1 and zeittyp_th=1 and zeittyp_tn=1 
+if <typ> = H then
+  item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_th=1
+end if
+if <typ> = N then
+  item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_th=1
+end if
+if <typ> = R then
+  item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_tr=1
+end if
+if <typ> = A or <typ> = E  then
+  item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_te=1
+end if
+end event

@@ -1,15 +1,4 @@
-﻿// Coding ID: beas_fert_arbplanpos_edit_open
-// By: Robin
-// Date: 2014/9/1
-// Remark: Change field name.
-windowevent open
-[automaticscript]
-dw_1.item.tr2aplatz_t.formatstring=text=process 01 for schedule+Cap,
-[/automaticscript]
-
-end event
-
-// Coding ID: beas_fert_arbplanpos_edit_postopen
+﻿// Coding ID: beas_fert_arbplanpos_edit_postopen
 // By: Robin
 // Date: 2014/9/10
 // Remark: Hide the "Cost" tab for everyone.

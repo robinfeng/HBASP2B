@@ -1,0 +1,7 @@
+﻿// Code ID: beas_fert_arbzeit_browse_alle_postopen
+// By: Robin
+// Date: 2014.10.13
+// Description: Disable create time receipt on this screen.
+windowevent postopen
+  menu=disable=new:
+end event

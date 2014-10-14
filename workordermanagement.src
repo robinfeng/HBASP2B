@@ -27,10 +27,10 @@ if <sys_dwname> = fert_arbzeit_erfassen then
 	setvar=res_sn_tag=<wert1>
 
 	setvar=wert1=
-	select count(1) from beas_ftpos_reservierung &
-	  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
-	  and item='<dw_1.item.udf1.value>'
-	setvar=sn_in_reservation=<wert1>
+	//select count(1) from beas_ftpos_reservierung &
+	//  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0> &
+	//  and item='<dw_1.item.udf1.value>'
+	//setvar=sn_in_reservation=<wert1>
 	//messagebox=<inputserialnumber>
 	if <res_sn_tag> = 'Y' and <l_sn_len> n= 0 then
 		message=error$beas_tr_1001$The resource have to record serial number in time receipt, please input Serial Number
@@ -85,14 +85,38 @@ if <sys_dwname> = fert_arbzeit_erfassen then
 		return false
 	end if
 
-	// 5. Disable quantity confirmation for time type proc 01
+	// 5. Disable quantity confirmation for time type setup
 	// Note: 
-	// If "proc. 01" and "proc. 02" set cost element and the time type proc. 01 quantity must be zero
+	// If "Setup" and "Process" set cost element and the time type Setup quantity must be zero
 	// messagebox=<barcode>,<trtimetype_id>,<timetype_id>
 	select len(trtimetype_id), len(timetype_id) from beas_ftapl where nummer='<barcode>'
 	if <typ> = R and <qty> n> 0 and <wert1> n> 0  and <wert2> n> 0 then
-		message=error$beas_tr_1006$The time type is "Proc. 01", therefore cannot input the quantity.
+		message=error$beas_tr_1006$The time type is "Setup", therefore cannot input the quantity.
 		return false
+	end if
+
+	// Validate the login time type of person and this time receipt’s time type are match or not
+	select zeittyp_tr, zeittyp_te, zeittyp_th, zeittyp_tn into tr, te, th, tn &
+	  from beas_pers where pers_id=N'<pers_id>'
+
+	select typname into typname from beas_timeoperator where typ=N'<typ>'
+	// messagebox=<pers_id>, <typ>, <typname> <cr_lf> &
+	// tr=<tr>, te=<te>, th=<th>, tn=<tn>
+	if <typ> = H and <tn> n<> 1  then
+	  messagebox=error$beas_tr_1011$This person didn't have <typname> time type right
+	  return false
+	end if
+	if <typ> = N and <th> n<> 1 then
+	  messagebox=error$beas_tr_1011$This person didn't have <typname> time type right
+	  return false
+	end if
+	if <typ> = R and <tr> n<> 1 then
+	  messagebox=error$beas_tr_1011$This person didn't have <typname> time type right
+	  return false
+	end if
+	if <typ> = A and <te> n<> 1  then
+	  messagebox=error$beas_tr_1011$This person didn't have <typname> time type right
+	  return false
 	end if
 end if
 
