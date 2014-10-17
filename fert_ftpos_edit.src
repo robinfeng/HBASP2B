@@ -1,7 +1,15 @@
-﻿// Code ID: beas_fert_ftpos_edit_itemchange_scraptag
-// By: Robin
-// Date: 2014.7.3
-// Descraption: Add scrap order tag to work order position
+﻿// @file: fert_ftpos_edit
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Production > Work Orders > Work Order position
+// Modified: 2014.7 - 2014.10
+// be.as work order position window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_fert_ftpos_edit_itemchange_scraptag
+// @descraption: Update WIA when click scrap order tag on work order position screen
 windowevent itemchange scraptag
 
 // Define the scrap order wip variance account
@@ -35,11 +43,13 @@ if <dw_1.item.scraptag.value> = 'N' then
 end if
 end event
 
-// Code ID: beas_fert_ftpos_edit_open
-// By: Robin Feng
-// Date: 2014.7.3
-// Description: Create a scrap tag for scrap order, define the position of the field in this form
+// @eventid: beas_fert_ftpos_edit_open
+// @description: 
+// 1. Create a scrap tag for scrap order, locate the field in this screen
+// 2. Rename the fields on this screen
 windowevent open
+// @codeid: beas_fert_ftpos_edit_open_1
+// @description: Create a scrap tag for scrap order, locate the field in this screen
 setvar=ll_x=<item.startzeit_struktur.x>
 setvar=ll_y=<item.startzeit_struktur.y>
 
@@ -48,6 +58,8 @@ create=checkbox=x=3400,y=<ll_y>,id=userfield1,name=scraptag,tab=41
 select p_scraptag into scraptag from beas_ftpos &
   where belnr_id=<str_parm.belnr_id,#0> and belpos_id=<str_parm.belpos_id,#0>
 //select u_D_sn_comp_item,u_M_cmp_version into udf2,udf3 from oitm where itemcode=N'<itemcode>'
+// @codeid: beas_fert_ftpos_edit_open_2
+// @description: Rename the fields on this screen
 [automaticscript]
 dw_1.item.u_znr_t.formatstring=text=Drawing version,
 [/automaticscript]
@@ -56,10 +68,8 @@ dw_1.item.lieferdatum_t.formatstring=text=Finish date,
 [/automaticscript]
 end event
 
-// Code ID: beas_fert_ftpos_edit_update
-// By: Robin
-// Date: 2014.7.3
-// Description: Update database to "scraptag"
+// @eventid: beas_fert_ftpos_edit_update
+// @description: Update "scraptag" value to database
 windowevent update
 sql=update beas_ftpos set p_scraptag='<dw_1.item.scraptag.value>' &
 //  udf2='<udf2>', udf3='<udf3>' &
@@ -67,10 +77,8 @@ sql=update beas_ftpos set p_scraptag='<dw_1.item.scraptag.value>' &
   and belpos_id=<str_parm.belpos_id,#0>
 end event
 
-// Coding ID:beas_fert_ftpos_edit_itemchange_itemcode
-// By:Robin
-// Date:2014.8.11
-// Description:Copy the CMP_Version, serial component itemcode from item master data
+// @eventid:beas_fert_ftpos_edit_itemchange_itemcode
+// @description: Copy the CMP_Version, serial component itemcode from item master data
 windowevent itemchange itemcode
 select u_D_sn_comp_item,u_M_cmp_version from oitm where itemcode=N'<itemcode>'
 setitem=udf2=<wert1>

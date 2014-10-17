@@ -1,6 +1,15 @@
-﻿// Code ID: beas_artikel_struktur_browse_doubleclick
-// By: Robin Feng
-// Date: N/A
+﻿// @file: artikel_struktur_browse
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Master Data > Item structure
+// Modified: 2014.8 - 2014.10
+// be.as item structure window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @codeid: beas_artikel_struktur_browse_doubleclick
+// @description: BuilkExpense and Project item can't be maintained.
 windowevent doubleclick 
 
  setvar=wert1   

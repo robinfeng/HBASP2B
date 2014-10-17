@@ -1,13 +1,25 @@
-﻿// Coding ID: beas_stockmanagement_transfer
-// By: Robin
-// Date: 20140808
-// Description: validate to all QC order:
-// a) non-consignmen: can't be "1-must be zero"
-// b) consignment: must be "1-must be zero"
+﻿// @file: stockmanagement
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: N/A
+// Modified: 2014.7 - 2014.10
+// Some inventory transation will tigger these function in be.as.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @functionid: beas_stockmanagement_transfer
+// @description: Inventory transfer & QC Order will tigger this function:
+// 1. The validation in the inventroy transfer screen, the "warehouse cost" and "consignment vendor" 
+// of "from warehouse" and "to warehouse" fields must be same.
+// 2. The validation in the QC order screen
+// a) For non-consignment GRPO, stock can't be transferred to "1-must be zero" warehouse in QC order pass/block transfer
+// b) For consignment GRPO, stock must be transferred to "1-must be zero" warehouse with same consignment vendor in QC order pass/block transfer
+
 function transfer
-// Date: 2014.9.15
-// Remark: The valudation in the inventroy transfer screen,
-// The "warehouse cost" and "consignment vendor" of "from warehouse" and "to warehouse" fields must be same.
+// @codeid: beas_stockmanagement_transfer_1
+// @description: The valudation in the inventroy transfer screen, the "warehouse cost" and "consignment vendor" 
+// of "from warehouse" and "to warehouse" fields must be same.
 if <sys_dwname> = mw_manuell_buchen then
 	select U_M_WarehouseCost,U_M_ConsiVendor into f_whcost,f_consivendor from owhs where whscode=N'<whscode>'
 	select U_M_WarehouseCost,U_M_ConsiVendor into t_whcost,t_consivendor from owhs where whscode=N'<whscode_zu>'
@@ -18,6 +30,10 @@ if <sys_dwname> = mw_manuell_buchen then
 	end if
 end if
 
+// @codeid: beas_stockmanagement_transfer_2
+// @description: The validation in the QC order screen
+// a) Non-consignment GRPO can't be "1-must be zero" warehouse
+// b) Consignment GRPO must be "1-must be zero" warehouse with same consignment vendor
 if <sys_dwname> = qs_qsfthaupt_edit and <e_basetype> n= 20 then
 	// If unlock quantity greater than 0
 	if <gutmenge> n> 0 then
@@ -27,12 +43,19 @@ if <sys_dwname> = qs_qsfthaupt_edit and <e_basetype> n= 20 then
 		setvar=l_consignment=<wert1>
 				
 		select isnull(t2.u_m_warehousecost,3) &
+		, t2.u_m_consivendor &
 		from owhs t2 &
 		where t2.whscode='<gutwhscode>'
 		setvar=l_warehousecost=<wert1>
+		setvar=l_cardcode=<wert2>
+		
 		//message=error$$unlock:<l_consignment>,<l_warehousecost>
 		if <l_consignment> = Y and <l_warehousecost> n<> 1 then
 			message=error$beas_qc_1008$This is consignment goods receipt, warehouse must be "1-Must be zero"
+			return false
+		end if
+		if <l_consignment> = Y and <l_cardcode> <> <cardcode> then
+			message=error$beas_qc_1015$This is consignment goods receipt, must be receipt to linked consignment vendor warehouse
 			return false
 		end if
 		if <l_consignment> = N and <l_warehousecost> n= 1 then
@@ -49,14 +72,20 @@ if <sys_dwname> = qs_qsfthaupt_edit and <e_basetype> n= 20 then
 		setvar=l_consignment=<wert1>
 				
 		select isnull(t2.u_m_warehousecost,3) &
+		, t2.u_m_consivendor &
 		from owhs t2 &
 		where t2.whscode='<schlechtwhscode>'
 		setvar=l_warehousecost=<wert1>
+		setvar=l_cardcode=<wert2>
 		//message=error$$block:<l_consignment>,<l_warehousecost>
 		if <l_consignment> = Y and <l_warehousecost> n<> 1 then
 			message=error$beas_qc_1008$This is consignment goods receipt, warehouse must be "1-Must be zero"
 			return false
 		end if
+		if <l_consignment> = Y and <l_cardcode> <> <cardcode> then
+			message=error$beas_qc_1015$This is consignment goods receipt, must be receipt to linked consignment vendor warehouse
+			return false
+		end if		
 		if <l_consignment> = N and <l_warehousecost> n= 1 then
 			message=error$beas_qc_1009$This is non-consignment goods receipt, warehouse cannot be "1-Must be zero"
 			return false
@@ -66,14 +95,19 @@ end if
 //return false
 end function
 
-// Coding ID: beas_stockmanagement_receipt
-// By: Robin
-// Date: 2014081
-// Description: S/N value drop list & validation
-// 1. S/N is mandatory if resource is defined as S/N relevant
-// 2. S/N value entry must be one of the S/N of the preforms issued to the WO
-// 3. The quantity can't greater than total issue quantity
+// @functionid: beas_stockmanagement_receipt
+// @description: 
+// 1. Validation for receipt inventory item to warehouse
+// a) S/N value entry must be one of the S/N of the preforms issued to the WO
+// b) All clock operation sequences must be closed, before goods receipt for production
+// 2. Validation for reverse of issue inventory item from warehouse
+// a) The quantity can't greater than total issue quantity
+// b) The serial or batch have to exist in goods issue
 function receipt
+
+// @codeid: beas_stockmanagement_receipt_1
+// @description: Validation for receipt inventory item to warehouse
+// a) S/N value entry must be one of the S/N of the preforms issued to the WO
 
 // Get the serial number componet item
 select udf2 from beas_ftpos &
@@ -139,7 +173,9 @@ if <typ> = F and <e_pos_id> n= 0 and <l_sn_comp_item> <> then
 	end if
 end if
 
-// Remark: The validation of goods issue reverse for components
+// @codeid: beas_stockmanagement_receipt_2
+// @description: Validation for reverse of issue inventory item from warehouse
+// a) The quantity can't greater than total issue quantity
 if <typ> = F and <e_pos_id> n<> 0 then
 //messagebox=TODO <cr_lf> Material posting  reversal to work order for batch managed material, quantity validation is not correct
 	select count(1) from OITM where ManBtchNum='Y' and itemcode=N'<itemcode>'
@@ -211,7 +247,10 @@ if <typ> = F and <e_pos_id> n<> 0 then
 			return false
 		end if
 	end if
-		
+
+// @codeid: beas_stockmanagement_receipt_2
+// @description: Validation for reverse of issue inventory item from warehouse
+// b) The serial or batch have to exist in goods issue
 	// Remark: The serial or batch have to exist in goods issue
 	select count(1) from OITM where (ManBtchNum='Y' or ManSerNum='Y') and itemcode=N'<itemcode>'
 	if <wert1> n= 1 then
@@ -272,7 +311,9 @@ if <typ> = F and <e_pos_id> n<> 0 then
 	end if
 end if
 
-// Check all operation sequences is closed, before goods receipt for production
+// @codeid: beas_stockmanagement_receipt_1
+// @description: Validation for receipt inventory item to warehouse
+// b) All clock operation sequences must be closed, before goods receipt for production
 if <typ> = F and <e_pos_id> n= 0 then
 	select count(1) from beas_ftapl &
 	where belnr_id=<e_belnr_id> and belpos_id=<e_belpos_id> &
@@ -284,10 +325,9 @@ if <typ> = F and <e_pos_id> n= 0 then
 end if
 end function
 
-// Coding ID: beas_stockmanagement_issue
-// By: Robin
-// Date: 20140813
-// Description: The S/N or B/N is error, can't find the s/n in current work order related item goods receipt.
+// @functionid: beas_stockmanagement_issue
+// @description: The validation of reverse of receipt inventory item to warehouse.
+// The S/N or B/N is must be exist in the s/n of current work order related item goods receipt.
 function issue
 //messagebox=<sys_dwname>,<typ>,<e_belnr_id>,<e_belpos_id>,<e_pos_id><cr_lf> &
 //<itemcode>,<l_sn_comp_item>,<serialnumber>,<batchnum><cr_lf> &

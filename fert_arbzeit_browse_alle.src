@@ -1,7 +1,15 @@
-﻿// Code ID: beas_fert_arbzeit_browse_alle_postopen
-// By: Robin
-// Date: 2014.10.13
-// Description: Disable create time receipt on this screen.
+﻿// @file: fert_arbzeit_browse_alle
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Production > Production Time Administration
+// Modified: 2014.9 - 2014.10
+// be.as production time administration window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_fert_arbzeit_browse_alle_postopen
+// @description: Disable add time receipt on this screen.
 windowevent postopen
   menu=disable=new:
 end event

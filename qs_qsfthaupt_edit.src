@@ -1,58 +1,61 @@
-﻿// Coding ID: beas_qs_qsfthaupt_edit_postopen
-// By: robin.feng@tech-sonic.net
-// Date: 20140725
-// Description: If the item is by serial management, 
-// then have to input by piece, can't input by test.
+﻿// @file: qs_qsfthaupt_edit
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Quality control > QC orders -> QC order
+// Modified: 2014.7 - 2014.10
+// be.as QC order window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
 
+// @eventid: beas_qs_qsfthaupt_edit_postopen
+// @description: Hide the "input by test" tab, when the is serial management item.
 windowevent postopen
 select mansernum from oitm where itemcode=N'<dw_1.item.itemcode.value>'
 if <wert1> = Y then
-tab=protect=4=1
+	tab=protect=4=1
 end if
 end event
 
-// Coding ID: beas_qs_qsfthaupt_edit_itemchange_gutmenge
-// By: robin.feng@tech-sonic.net
-// Date: 20140807
-// Description: If consignment: true
-// default unlock warehouse: consignment warehouse
+// @eventid: beas_qs_qsfthaupt_edit_itemchange_gutmenge
+// @description: If this is purchase consignment QC order,
+// default unlock warehouse must be consignment warehouse
+// TODO: u_m_warehousecost
 windowevent itemchange gutmenge
 
 if <dw_1.item.basetype.value> n= 20 then
-select count(1) from pdn1 t1 &
-  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-if <wert1> n= 1 then
-select owhs.whscode &
-from owhs,oitw &
-where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-and isnull(owhs.u_beas_lck,'') <> 'W' and owhs.whscode<>'<whscode>' &
-and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>' &
-order by owhs.whscode
-setitem=gutwhscode=<wert1>
-//gutwhscode=protect=1
-end if
+	select count(1) from pdn1 t1 &
+	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+	if <wert1> n= 1 then
+		select owhs.whscode &
+		from owhs,oitw &
+		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
+		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
+		and isnull(owhs.u_beas_lck,'') <> 'W' and owhs.whscode<>'<whscode>' &
+		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>' &
+		order by owhs.whscode
+		setitem=gutwhscode=<wert1>
+		//gutwhscode=protect=1
+	end if
 end if
 end event
 
-// Coding ID: beas_qs_qsfthaupt_edit_itemchange_schlechtmenge
-// By: robin.feng@tech-sonic.net
-// Date: 20140807
-// Description: If consignment: true
-// default block warehouse: consignment block warehouse
+// @eventid: beas_qs_qsfthaupt_edit_itemchange_schlechtmenge
+// @description: If this is purchase consignment QC order,
+// default block warehouse must be consignment block warehouse
 windowevent itemchange schlechtmenge
 if <dw_1.item.basetype.value> n= 20 then
-select count(1) from pdn1 t1 &
-  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-if <wert1> n= 1 then
-select owhs.whscode &
-from owhs,oitw &
-where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
-and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
-setitem=schlechtwhscode=<wert1>
-//schlechtwhscode=protect=1
-end if
+	select count(1) from pdn1 t1 &
+	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
+	if <wert1> n= 1 then
+		select owhs.whscode &
+		from owhs,oitw &
+		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
+		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
+		and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
+		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
+		setitem=schlechtwhscode=<wert1>
+		//schlechtwhscode=protect=1
+	end if
 end if
 end event

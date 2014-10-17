@@ -1,7 +1,15 @@
-﻿// Coding ID:beas_fert_postin_summary_header_postopen
-// By:Robin
-// Date:20140812
-// Description:Change the field name from "Batch" to "Serial", if the item is serial management
+﻿// @file: fert_postin_summary_header
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Attendance > Terminal >> Production collect post in
+// Modified: 2014.8 - 2014.10
+// be.as Production collect post in window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_fert_postin_summary_header_postopen
+// @description: Change the fields name, if the item is serial management
 windowevent postopen
 select count(1) from oitm &
 where mansernum='Y' and itemcode=N'<dw_1.item.beas_ftpos_itemcode.value>'
@@ -12,12 +20,10 @@ if <wert1> n= 1 then
 end if
 end event
 
-// Coding ID:beas_fert_postin_summary_header_click_b_3
-// By:Robin
-// Date:20140812
-// Description:GR validation from WO
-// 1. FG receiving from WO can only be done after all operations of the WO are completed
-// 2. The FG S/N received from WO must be one of the S/N of the preforms issued to the WO
+// @eventid: beas_fert_postin_summary_header_click_b_3
+// @description: GR validation from WO
+// 1. GR for WO can only be done after all clock operations of the WO are completed
+// 2. The S/N of goods received for WO must be one of the S/N of the preforms issued to the WO
 windowevent click b_3
 
 //messagebox=Coding ID:beas_fert_postin_summary_header_itemchange_distnumber <cr_lf>&
@@ -27,7 +33,8 @@ windowevent click b_3
 
 //return false
 
-// Check all operation sequences is closed, before goods receipt for production
+// @codeid: beas_fert_postin_summary_header_click_b_3_1
+// @description: GR for WO can only be done after all clock operations of the WO are completed
 select count(1) from beas_ftapl &
 where belnr_id=<dw_6.item.belnr_id.value> and belpos_id=<dw_6.item.belpos_id.value> &
 and abgkz='N' and bde='J'
@@ -36,13 +43,14 @@ if <wert1> n> 0 then
   return false
 end if
 
+// @codeid: beas_fert_postin_summary_header_click_b_3_2
+// @description: The S/N of goods received for WO must be one of the S/N of the preforms issued to the WO
 // Get the serial number componet item
 select udf2 from beas_ftpos &
 where beas_ftpos.belnr_id=<dw_6.item.belnr_id.value> and beas_ftpos.belpos_id=<dw_6.item.belpos_id.value>
 setvar=l_sn_comp_item=<wert1>
 
 // The validation for WO receiving to check serial number consistence between preform and FG does not work
-
 select count(X.serialnum) &
 //sum(X.ibt1_quantity) &
 from ( &

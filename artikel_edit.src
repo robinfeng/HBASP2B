@@ -1,116 +1,125 @@
-﻿// Code ID: beas_artikel_edit_postopen
-// By: Will
-// Date: N/A
-// Description: Customization authrization of beas
+﻿// @file: artikel_edit
+// @author: Will Weng
+// @remarks: Modify by Robin Feng
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Master Data > Item repot >> Edit
+// Modified: 2014.9 - 2014.10
+// be.as master data window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_artikel_edit_postopen
+// @description: Customization authrization of beas
 windowevent postopen
-//protect=u_match=1
+// @codeid: beas_artikel_edit_postopen_1
+// @description: Disable update item group and item type
 protect=itmsgrpcod=1
 protect=itemtype=1
-//get currenct user code
-setvar=cuser=<currentuser>
 
-//select currenct user general tab right, if no right this tab will be disable.
+// @codeid: beas_artikel_edit_postopen_2
+// @description: Select currenct user general tab right, if no right this tab will be disable.
+
+// @usage: Get currenct user code
+setvar=cuser=<currentuser>
 setvar=wert1
-//if current user have no right to open item master window, an error message will be show 
+// @usage: If current user have no right to open item master window, an error message will be show 
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>'
 if <wert1> n= 0 then
-      messagebox=error$id=beas_mm_1002<tab>&
-      text=<cuser>,you have no right to open item master data window the screen will be close!<tab>&
-      popup=true
-//     messagebox=**$ <cuser>,you have no right to open item master data window the screen will be close!
-     post=close:cancel
+  messagebox=error$id=beas_mm_1002<tab>&
+  text=<cuser>,you have no right to open item master data window the screen will be close!<tab>&
+  popup=true
+  // @test: messagebox=**$ <cuser>,you have no right to open item master data window the screen will be close!
+  post=close:cancel
 else
-//select currenct user general tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='01'
-if <wert1> n= 0 then
+  // @usage: Select currenct user general tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='01'
+  if <wert1> n= 0 then
     etab=visible=stamm=return false
-end if
-//select currenct user purchasing data tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='02'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user purchasing data tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='02'
+  if <wert1> n= 0 then
     etab=visible=buy=return false
-end if
-//select currenct user sales data tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='03'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user sales data tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='03'
+  if <wert1> n= 0 then
     etab=visible=sale=return false
-end if
-//select currenct user inventory data tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='04'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user inventory data tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='04'
+  if <wert1> n= 0 then
     etab=visible=warehouse=return false
-end if
-//select currenct user batch tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='05'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user batch tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='05'
+  if <wert1> n= 0 then
     etab=visible=batchnum=return false
-end if
-//select currenct user planning data tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='06'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user planning data tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='06'
+  if <wert1> n= 0 then
     etab=visible=planning=return false
-end if
-//select currenct user QC inspection plan tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='07'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user QC inspection plan tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='07'
+  if <wert1> n= 0 then
     etab=visible=qs=return false
-end if
-//select currenct user Bill of Material tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='08'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user Bill of Material tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='08'
+  if <wert1> n= 0 then
     tab=protect=2=1
-end if
-//select currenct user routing tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='09'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user routing tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='09'
+  if <wert1> n= 0 then
     tab=protect=3=1
-end if
-//select currenct user UDFs to MM tab right, if no right this tab will be disable.
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='10'
-if <wert1> n> 0 then
+  end if
+  // @usage: Select currenct user UDFs to MM tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='10'
+  if <wert1> n> 0 then
     tab=add=UDFs to MM=tab_mm.psr
-end if
-
-//select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='11'
-//if <wert1> n> 0 then
-//    tab=add=UDFs to MM=tab_fi.psr
-//end if
-
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='12'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user calculation tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='12'
+  if <wert1> n= 0 then
     etab=visible=kalk=return false
-end if
-
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='13'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user propertie tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='13'
+  if <wert1> n= 0 then
     etab=visible=propertie=return false
-end if
-
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='14'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user remarks tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='14'
+  if <wert1> n= 0 then
     etab=visible=usertext=return false
-end if
-
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='15'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user variant tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='15'
+  if <wert1> n= 0 then
     etab=visible=variante=return false
-end if
-
-select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='16'
-if <wert1> n= 0 then
+  end if
+  // @usage: Select currenct user series tab right, if no right this tab will be disable.
+  select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<cuser>' and t1.U_Tabcode='16'
+  if <wert1> n= 0 then
     etab=visible=serie=return false
+  end if
+
 end if
 
-//disable configurator tab/
-
+// @codeid: beas_artikel_edit_postopen_3
+// @description: Disable production configurator tab
 tab=protect=5=1
+
+// @codeid: beas_artikel_edit_postopen_4
+// @description: Set material group value
 select u_m_gruppe from oitb where itmsgrpcod=<dw_1.item.itmsgrpcod.value,#0>
 setitem=u_gruppe=<wert1>
-end if
 
-// Remark:Add user define field of OITM on be.as Item Master Data screen
-// By:Robin
-// Date:20140808
+// @codeid: beas_artikel_edit_postopen_5
+// @description: Add user define field of OITM on be.as Item Master Data screen
 etab=addnewobject=stamm=D_sn_comp_item=column=userfield1=nextlinefrom=u_brgew
 etab=addnewobject=stamm=D_sn_comp_item_t=text=Serial number Component Item=nextlinefrom=u_brgew_t
 
@@ -121,17 +130,17 @@ select u_D_sn_comp_item,U_M_cmp_version into D_sn_comp_item, M_cmp_version from 
 
 end event
 
-// Code ID: beas_artikel_edit_open
-// By: Will
-// Date: N/A
-// Description: The screen format
+// @eventid: beas_artikel_edit_open
+// @description: 1. Rename some fields on this screen
+// 2. Expense / capital project item group cannot edit at this screen.
 windowevent open
- // expense / capital project item group cannot edit at this screen.
+// @codeid: beas_artikel_edit_open_1
+// @description: Expense / capital project item group cannot edit at this screen.
    if <dw_1.item.itmsgrpcod.value> n= 110 then 
       messagebox=error$id=beas_mm_1003<tab>&
       text=This item can NOT maintain in this screen<tab>&
       popup=true
-//      messagebox=**$This item can NOT maintain in this screen
+// @test: messagebox=**$This item can NOT maintain in this screen
       post=close:cancel
    end if
 
@@ -139,10 +148,12 @@ windowevent open
       messagebox=error$id=beas_mm_1003<tab>&
       text=This item can NOT maintain in this screen<tab>&
       popup=true
-//      messagebox=**$This item can NOT maintain in this screen
+// @test: messagebox=**$This item can NOT maintain in this screen
       post=close:cancel
    end if
 
+// @codeid: beas_artikel_edit_open_2
+// @description: Rename some fields on this screen
 [automaticscript]
 dw_1.item.sww_t.formatstring=text=Buyer,
 [/automaticscript]
@@ -159,35 +170,36 @@ dw_1.item.d_sn_comp_item.formatstring=errortext=Please enter s/n component item 
 [/automaticscript]
 end event
 
-// Code ID: beas_artikel_edit_update
-// By: Robin
-// Date: 2014.9.23
-// Description: Update user define fields
+// @eventid: beas_artikel_edit_update
+// @description: Update user define fields on this screen
 windowevent update
 update oitm set u_d_sn_comp_item=N'<dw_1.item.D_sn_comp_item.value>', &
   u_m_cmp_version=N'<dw_1.item.m_cmp_version.value>' &
   where itemcode=N'<dw_1.item.itemcode.value>'
 end event
 
-// Code ID: beas_artikel_edit_preupdate
-// By: Robin
-// Date: 2014.9.23
-// Description: Validation before update
+// @eventid: beas_artikel_edit_preupdate
+// @description: 1. Validate inventory uom before update
+// 2. Validate item cost by warehouse
 windowevent preupdate
+// @codeid: beas_artikel_edit_preupdate_1
+// @description: Validate inventory uom before update
 if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y'  and <dw_1.item.frozenfor.value> <> 'Y' then
       messagebox=error$id=beas_mm_1005<tab>&
       text=The unit name in Inventory Tab is mandatory information for inventory item<tab>&
       popup=true
-//    messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
+// @test: messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
     return false
 end if
 
+// @codeid: beas_artikel_edit_preupdate_2
+// @description: Validate item cost by warehouse
 setvar=error_id=
 setvar=warehouses=
 
 declare=ds_whscost=ue_datastorevalues
 ds_whscost=select t1.whscode, t1.avgprice from oitw t1 &
-where t1.itemcode=N'<dw_1.item.itemcode.value>'
+  where t1.itemcode=N'<dw_1.item.itemcode.value>'
 
 for=loop=1=<ds_whscost.rowcount>
     ds_whscost=setrow=<loop>
@@ -207,70 +219,45 @@ if <error_id> = beas_mm_1008 then
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_evalsystem
-// By: Will
-// Date: N/A
-// Description: The validation for "Valuation method" change
+// @eventid: beas_artikel_edit_itemchange_evalsystem
+// @description: Validate "Valuation method" when change it
 windowevent itemchange evalsystem
-      messagebox=error$id=beas_mm_1004<tab>&
-      text=The Standard evaluation only<tab>&
-      popup=true
-//			messagebox=error$The Standard evaluation only
-         setitem=evalsystem=S
-         return true
-         dw_1.item.evalsystem.redraw
+  messagebox=error$id=beas_mm_1004<tab>&
+  text=The Standard evaluation only<tab>&
+  popup=true
+// @test: messagebox=error$The Standard evaluation only
+  setitem=evalsystem=S
+  return true
+  dw_1.item.evalsystem.redraw
 end event
 
-// Code ID: beas_artikel_edit_itemchange_invntitem
-// By: Will
-// Date: N/A
-// Description: The validation for "Warehouse Item" change
-windowevent itemchange invntitem		
-
-    if <dw_1.item.itmsgrpcod.value> n= 101 then   
-         setitem=serbatchtyp=B
-         setitem=manbtchnum=Y
-         setitem=mansernum=N
-			return true
-         dw_1.item.serbatchtyp.redraw
-			dw_1.item.manbtchnum.redraw
-         dw_1.item.mansernum.redraw
-    end if 
-
-end event
-
-// Code ID: beas_artikel_edit_close
-// By: Will
-// Date: N/A
-// Description: The validation for close item master window
+// @eventid: beas_artikel_edit_close
+// @description: Validate the standard cost and uom of this item is correct or not, when close this screen
 windowevent close
 
 if <dw_1.item.evalsystem.value> <> 'S'  and <dw_1.item.frozenfor.value> <> 'Y' then
-      messagebox=error$id=beas_mm_1004<tab>&
-      text=The Standard evaluation only<tab>&
-      popup=true
-//     messagebox=error$The Standard evaluation only
-     return false
+  messagebox=error$id=beas_mm_1004<tab>&
+  text=The Standard evaluation only<tab>&
+  popup=true
+// @test: messagebox=error$The Standard evaluation only
 end if
 
 if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y' and <dw_1.item.frozenfor.value> <> 'Y' then
-      messagebox=error$id=beas_mm_1005<tab>&
-      text=The unit name in Inventory Tab is mandatory information for inventory item<tab>&
-      popup=true
-//    messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
-    //return false
+  messagebox=error$id=beas_mm_1005<tab>&
+  text=The unit name in Inventory Tab is mandatory information for inventory item<tab>&
+  popup=true
+// @test: messagebox=error$The unit name in Inventory Tab is mandatory information for inventory item
+  return false
 end if
  
-//cancel:update
+// @test: cancel:update
 end event
 
-// Code ID: beas_artikel_edit_itemchange_u_gruppe
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for Material group change
+// @eventid: beas_artikel_edit_itemchange_u_gruppe
+// @description: Validate "Material group" field when change it. The material group is mandatory, if it is direct material item
 windowevent itemchange u_gruppe
 //-- itemchange-event for column Material Group
-//-- Last Change 24.09.2014 15:40:57 from manager, Station 冯超的MacBook Pro
+//-- Last Change 24.09.2014 15:40:57 from manager
 select U_D_DirectMat from oitb &
 where itmsgrpcod=<dw_1.item.itmsgrpcod.value>
 if <wert1> = Y then
@@ -282,13 +269,11 @@ if <wert1> = Y then
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_d_sn_comp_item
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for "Serial number component item" change
+// @eventid: beas_artikel_edit_itemchange_d_sn_comp_item
+// @description: Validate "Serial number component item" field when change it. Must be input correct "serial number component item" if this is serial, make parts and active item.
 windowevent itemchange d_sn_comp_item
 //-- itemchange-event for column Serial number Component Item
-//-- Last Change 25.09.2014 16:59:35 from Robin, Station HB01W07
+//-- Last Change 25.09.2014 16:59:35 from Robin
 if <dw_1.item.serbatchtyp.value> = S and <dw_1.item.prcrmntmtd.value> = M &
   and <dw_1.item.validfor.value> = Y and <dw_1.item.d_sn_comp_item:[dwo-row].value> = then
   dw_1.item.d_sn_comp_item.status=error
@@ -308,13 +293,11 @@ else
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_prcrmntmtd
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for "Mode of procurement" change
+// @eventid: beas_artikel_edit_itemchange_prcrmntmtd
+// @description: Validate "Mode of procurement" field when change it. Must be input correct "serial number component item" if this is serial, make parts and active item.
 windowevent itemchange prcrmntmtd
 //-- itemchange-event for column Serial number Component Item
-//-- Last Change 25.09.2014 16:12:04 from Robin, Station HB01W07
+//-- Last Change 25.09.2014 16:12:04 from Robin
 if <dw_1.item.serbatchtyp.value> = S and <dw_1.item.prcrmntmtd.value> = M &
   and <dw_1.item.validfor.value> = Y and <dw_1.item.d_sn_comp_item:[dwo-row].value> = then
   dw_1.item.d_sn_comp_item.status=error
@@ -334,10 +317,8 @@ else
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_serbatchtyp
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for "Item Administrate by" change
+// @eventid: beas_artikel_edit_itemchange_serbatchtyp
+// @description: Validate "Item Administrate by" field when change it. Must be input correct "serial number component item" if this is serial, make parts and active item.
 windowevent itemchange serbatchtyp
 //-- itemchange-event for column Serial number Component Item
 //-- Last Change 25.09.2014 16:12:04 from Robin, Station HB01W07
@@ -360,10 +341,8 @@ else
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_validfor
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for "Active" change
+// @eventid: beas_artikel_edit_itemchange_validfor
+// @description: Validate "Active" field when change it. Must be input correct "serial number component item" if this is serial, make parts and active item.
 windowevent itemchange validfor
 //-- itemchange-event for column Serial number Component Item
 //-- Last Change 25.09.2014 16:12:04 from Robin, Station HB01W07
@@ -386,10 +365,8 @@ else
 end if
 end event
 
-// Code ID: beas_artikel_edit_itemchange_frozenfor
-// By: Robin
-// Date: 2014.9.30
-// Description: The validation for "Inactive" change
+// @eventid: beas_artikel_edit_itemchange_frozenfor
+// @description: Validate "Inactive" field when change it. Must be input correct "serial number component item" if this is serial, make parts and active item.
 windowevent itemchange frozenfor
 //-- itemchange-event for column Serial number Component Item
 //-- Last Change 25.09.2014 16:12:04 from Robin, Station HB01W07

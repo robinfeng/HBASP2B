@@ -1,13 +1,21 @@
-﻿// Coding ID: beas_sbo_150_itemchanged_28_22
-// By: Robin
-// Date: 20140808
-// Description:Material standard cost validation by warehouse, if the warehouse set "1-Must be zero", then the cost price always be  0
+﻿// @file: sbo_150
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: SBO > Inventory > Item Master Data
+// Modified: 2014.7 - 2014.10
+// be.as Item Master Data window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_sbo_150_itemchanged_28_22
+// @description: Material standard cost validation by warehouse, if the warehouse set "1-Must be zero", then the cost price always be  0
 windowevent itemchanged 28 22
 //messagebox=<item.5.value>,<item.28.col.1.value>
 select isnull(u_m_warehousecost,3) from owhs where whscode=N'<item.28.col.1.value>'
 if <wert1> n= 1 then
-item.28.col.22.value=0
-message=error$beas_md_1002$The warehouse set "1-Must be zero",the cost price always be 0
-return false
+	item.28.col.22.value=0
+	message=error$beas_md_1002$The warehouse set "1-Must be zero",the cost price always be 0
+	return false
 end if
 end event

@@ -1,15 +1,30 @@
-﻿windowevent open
+﻿// @file: fert_arbzeit_erfassen
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Production > Production Time Receipt
+// Modified: 2014.7 - 2014.10
+// be.as Production Time Receipt window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
+
+// @eventid: beas_fert_arbzeit_erfassen_open
+// @description: Rename the fields on this screen.
+windowevent open
 [automaticscript]
 dw_1.item.menge_gut_rm_t.formatstring=text=Quantity,
 [/automaticscript]
 end event
 
-// Code ID: beas_fert_arbzeit_erfassen_postopen
-// By: Robin Feng
-// Date: N/A
-// Description: Customization authrization for scrap fields and cost center.
+// @eventid: beas_fert_arbzeit_erfassen_postopen
+// @description: Tigger this event when open this screen
+// 1. Disable 2 buttons "partial receipt" and "confirm completetion", when open from work order structure
+// 2. Customization authrization of beas
+// 3. Disable update "resource" field
+// 4. Disable update "cost element" field
 windowevent postopen
-// Disable 2 buttons "partial receipt" and "confirm completetion", when open from work order structure
+// @codeid: beas_fert_arbzeit_erfassen_postopen_1
+// @description: Disable 2 buttons "partial receipt" and "confirm completetion", when open from work order structure
 if <ctyp> = fa then
 //  messagebox=error$id=beas_tr_1008<tab>&
 //  text=Disable "create time receipt" on this screen! <cr_lf> &
@@ -20,14 +35,16 @@ if <ctyp> = fa then
   menu=disable=Aus&schuss
 end if
 
-//select currenct user scrap right, if no right this tab will be disable.
+// @codeid: beas_fert_arbzeit_erfassen_postopen_2
+// @description: Customization authrization of beas
+// @usage: Select currenct user scrap right, if no right this tab will be disable.
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='18'
 if <wert1> n= 0 then
 	dw_1.item.menge_schlecht_rm_t.visible=false
 	dw_1.item.menge_schlecht_rm.visible=false
 	dw_1.item.c_menge_schlecht_rm.visible=false
 end if
-//select currenct user cost center right, if no right this tab will be disable.
+// @usage: Select currenct user cost center right, if no right this tab will be disable.
 select count(*) from [@ZMIAT]  t0 inner join [@ZMIA1]  t1 on t0.docentry=t1.docentry where U_Userid='<currentuser>' and t1.U_Tabcode='19'
 if <wert1> n= 0 then
 	dw_1.item.kstst_id.visible=false
@@ -35,19 +52,22 @@ if <wert1> n= 0 then
 	dw_1.item.kstst_id_p.visible=false
   dw_1.item.kstst_id1_t.visible=false
 end if
-// Disable the "resource" field
+
+// @codeid: beas_fert_arbzeit_erfassen_postopen_3
+// @description: Disable update "resource" field
 item.aplatz_id=protect=1
 item.aplatz_id_p=protect=1
 item.aplatz_id_p.visible=0
-// Disable the "cost element" field
+
+// @codeid: beas_fert_arbzeit_erfassen_postopen_4
+// @description: Disable update "cost element" field
 item.timetype_id=protect=1
 item.timetype_id_p.visible=0
 end event
 
-// Coding ID: beas_fert_arbzeit_erfassen_itemchange_barcode
-// By: robin.feng@tech-sonic.net
-// Date: 20140704
-// Description: 
+// @eventid: beas_fert_arbzeit_erfassen_itemchange_barcode
+// @description: Tigger this event when change the barcode
+// Add dropdown list to "serial number" field
 windowevent itemchange barcode
 
 // Add dropdown list to "serial number" field
@@ -72,12 +92,10 @@ end if
 menu=redraw
 end event
 
-// Coding ID: beas_fert_arbzeit_erfassen_click_udf1_p
-// By: robin.feng@tech-sonic.net
-// Date: 20140704
-// Description: Update the dropdown list of Serial Number, when click the dropdown button
+// @eventid: beas_fert_arbzeit_erfassen_click_udf1_p
+// @description: Refresh the dropdown list of Serial Number, when click the dropdown button
 windowevent click udf1_p
-//item.udf1.dropdown.select item from beas_ftpos_reservierung &
+// @test: item.udf1.dropdown.select item from beas_ftpos_reservierung &
 //  where belnr_id=<dw_1.item.belnr_id.value,#0> and belpos_id=<dw_1.item.belpos_id.value,#0>
 select udf2 from beas_ftpos &
 where beas_ftpos.belnr_id=<belnr_id> and beas_ftpos.belpos_id=<belpos_id>
@@ -133,14 +151,12 @@ group by X.serialnum &
 having sum(X.ibt1_quantity)=-1
 end event
 
-// Code ID: beas_fert_arbzeit_erfassen_click_b_3
-// By: Robin Feng
-// Date: 2014.10.10
-// Description: If click the “partial receipt” button (none final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be less and equal as Planned Qty
+// @eventid: beas_fert_arbzeit_erfassen_click_b_3
+// @description: If click the “partial receipt” button (none final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be less and equal as Planned Qty
 windowevent click b_3
 if <ctyp> =  then
   select <sollmenge> - (<gutmenge>+<schlechtmenge>+<menge_gut_rm>+<menge_schlecht_rm>)
-//  messagebox=Test for "7.2.2.1	Time receipts validation when click “partial receipt” button" <cr_lf> &
+// @test: messagebox=Test for "7.2.2.1	Time receipts validation when click “partial receipt” button" <cr_lf> &
 //    Planned Qty: <sollmenge> <cr_lf> &
 //    Completed Yield Qty: <gutmenge> <cr_lf> &
 //    Completed Scrap Qty: <schlechtmenge> <cr_lf> &
@@ -154,14 +170,12 @@ if <ctyp> =  then
 end if
 end event
 
-// Code ID: beas_fert_arbzeit_erfassen_click_b_4
-// By: Robin Feng
-// Date: 2014.10.10
-// Description: If click the “comfirm completion” button (final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be equal as Planned Qty
+// @eventid: beas_fert_arbzeit_erfassen_click_b_4
+// @description: If click the “comfirm completion” button (final completion), Yield qty + Scrap qty + Produced yield qty + As yet scrap qty must be equal as Planned Qty
 windowevent click b_4
 if <ctyp> =  then
   select <sollmenge> - (<gutmenge>+<schlechtmenge>+<menge_gut_rm>+<menge_schlecht_rm>)
-//  messagebox=Test for "7.2.2.2	Time receipts validation when click “comfirm completion” button <cr_lf> &
+// @test: messagebox=Test for "7.2.2.2	Time receipts validation when click “comfirm completion” button <cr_lf> &
 //    Planned Qty: <sollmenge> <cr_lf> &
 //    Completed Yield Qty: <gutmenge> <cr_lf> &
 //    Completed Scrap Qty: <schlechtmenge> <cr_lf> &
@@ -175,16 +189,14 @@ if <ctyp> =  then
 end if
 end event
 
-// Code ID: beas_fert_arbzeit_erfassen_click_pers_id_p
-// By: Robin
-// Date: 20141013
-// Description: Person dropdown list can be refresh by time type, need to define the login time type of person first 
+// @eventid: beas_fert_arbzeit_erfassen_click_pers_id_p
+// @description: Person dropdown list can be refresh by time type, need to define the login time type of person first 
 windowevent click pers_id_p
-// R=zeittyp_tr // setup
+// @test: R=zeittyp_tr // setup
 // A=zeittyp_te // process
 // N=zeittyp_th // qc
 // H=zeittyp_tn // rework
-//item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_tr=1 and zeittyp_te=1 and zeittyp_th=1 and zeittyp_tn=1 
+// item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_tr=1 and zeittyp_te=1 and zeittyp_th=1 and zeittyp_tn=1 
 if <typ> = H then
   item.pers_id.dropdown.select=pers_id,name2+' '+name1 from beas_pers where zeittyp_th=1
 end if

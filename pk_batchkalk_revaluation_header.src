@@ -1,8 +1,15 @@
-﻿// Coding ID: beas_pk_batchkalk_revaluation_header_postopen
-// By: robin.feng@tech-sonic.net
-// Date: 20140725
-// Description: Add filter button to unselect these lines which warehouse is “must be zero”
+﻿// @file: pk_batchkalk_revaluation_header
+// @author: Robin Feng
+// @remarks: 
+// @version: beas 9.0-000-002-036
+// @path: BEAS > Calculation > Batch calculation >> Result >> Stock revaluation
+// Modified: 2014.8 - 2014.10
+// be.as Stock revaluation window will tigger this customize code.
+// Copyright(C) TechSonic
+// All rights reserved.
 
+// @eventid: beas_pk_batchkalk_revaluation_header_postopen
+// @description: Add "Reset zero price" button on this screen.
 windowevent postopen
 //item.reference2.dropdown.activate
 //item.reference2.dropdown.select whscode,whsname from owhs
@@ -12,52 +19,26 @@ create=button=name=filter,menutext=Reset zero price,text=Reset zero price
 //create=button=name=unselectall,menutext=Unselect All,text=Unselect All
 end event
 
+// @eventid: beas_pk_batchkalk_revaluation_header_click_filter
+// @description: The process when click the "Reset zero price" button. Update these lines which warehouse is “must be zero” to zero.
 windowevent click filter
 //dw_2.setfilter=whscode='<dw_1.item.reference2.value>'
 //dw_2.filter
 setvar=ll_count=0
 
 for=loop=1=<dw_2.rowcount>
-setrow=<loop>
+	setrow=<loop>
 
-select convert(int,U_M_WarehouseCost) from OWHS &
-where whscode=N'<dw_2.item.whscode:[loop].value>'
+	select convert(int,U_M_WarehouseCost) from OWHS &
+	where whscode=N'<dw_2.item.whscode:[loop].value>'
 
-if <wert1> n= 1 then
-dw_2.item.ok:[loop].value=0
-dw_2.item.newprice:[loop].value=0
-setvar=l_count=%numadd(<ll_count>,1)
-end if
+	if <wert1> n= 1 then
+		dw_2.item.ok:[loop].value=0
+		dw_2.item.newprice:[loop].value=0
+		setvar=l_count=%numadd(<ll_count>,1)
+	end if
 next
 if <ll_count> n= 0 then
-message=info$$No item needs to be updated as zero price.
+	message=info$$No item needs to be updated as zero price.
 end if
 end event
-
-//
-//windowevent click selectall
-//for=loop=1=<dw_2.rowcount>
-//setrow=<loop>
-//
-//if <dw_2.item.newprice:[loop].value> n> 0 then
-//dw_2.item.ok:[loop].value=1
-//else
-//dw_2.item.ok:[loop].value=0
-//end if
-//
-//next
-//end event
-//
-//windowevent click unselectall
-//for=loop=1=<dw_2.rowcount>
-//setrow=<loop>
-//
-//dw_2.item.ok:[loop].value=0
-//
-//next
-//end event
-//
-//windowevent itemchange reference2
-//dw_2.setfilter=whscode='<dw_1.item.reference2.value>'
-//dw_2.filter
-//end event
