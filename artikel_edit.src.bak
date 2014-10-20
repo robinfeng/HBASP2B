@@ -240,7 +240,6 @@ if <dw_1.item.evalsystem.value> <> 'S'  and <dw_1.item.frozenfor.value> <> 'Y' t
   text=The Standard evaluation only<tab>&
   popup=true
 // @test: messagebox=error$The Standard evaluation only
-  return false
 end if
 
 if <dw_1.item.invntryuom.value> = '' and <dw_1.item.invntitem.value> = 'Y' and <dw_1.item.frozenfor.value> <> 'Y' then

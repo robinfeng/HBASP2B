@@ -18,44 +18,60 @@ end if
 end event
 
 // @eventid: beas_qs_qsfthaupt_edit_itemchange_gutmenge
-// @description: If this is purchase consignment QC order,
-// default unlock warehouse must be consignment warehouse
-// TODO: u_m_warehousecost
+// @description: 
+// If the QC warehouse cost indicator is "1-Must be zero", then default unlock 
+// warehouse is consignment warehouse linked to this QC warehouse, which means 
+// the warehouse cost indicator is ‘1-Must be zero’, and the consignment vendor 
+// in warehouse definition is same as the QC warehouse, and the warehouse type 
+// defined in BEAS is blank.
+
+// If the QC warehouse cost indicator is "3-Not must be zero",
+// then default unlock warehouse is the default warehouse of this item
 windowevent itemchange gutmenge
 
 if <dw_1.item.basetype.value> n= 20 then
-	select count(1) from pdn1 t1 &
-	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-	if <wert1> n= 1 then
-		select owhs.whscode &
-		from owhs,oitw &
-		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-		and isnull(owhs.u_beas_lck,'') <> 'W' and owhs.whscode<>'<whscode>' &
-		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>' &
-		order by owhs.whscode
-		setitem=gutwhscode=<wert1>
-		//gutwhscode=protect=1
+	select isnull(u_m_warehousecost,3), u_m_consivendor into l_whcost, l_consivendor &
+	 	from owhs &
+		where whscode=N'<whscode>'
+
+	if <l_whcost> n= 1 then
+		select whscode from owhs &
+			where isnull(u_m_warehousecost,3)=1 &
+			and u_m_consivendor = N'<l_consivendor>' &
+			and len(u_beas_lck)=0
+		setitem=gutwhscode=<wert1>	
+	end if
+
+	if <l_whcost> n= 3 then
+		select DfltWH from oitm where itemcode=N'<itemcode>'
+		setitem=gutwhscode=<wert1>	
 	end if
 end if
 end event
 
 // @eventid: beas_qs_qsfthaupt_edit_itemchange_schlechtmenge
-// @description: If this is purchase consignment QC order,
-// default block warehouse must be consignment block warehouse
+// @description: 
+// If the QC warehouse cost indicator is "1-Must be zero", then default lock warehouse
+// is return consignment warehouse linked to this QC warehouse, which means the warehouse
+// cost indicator is ‘1-Must be zero’, and the consignment vendor in warehouse definition
+// is same as the QC warehouse, and the warehouse type defined in BEAS is ‘Blocked warehouse’.
+// If the QC warehouse cost indicator is "3-Not must be zero", then default lock warehouse is 920.
+
 windowevent itemchange schlechtmenge
 if <dw_1.item.basetype.value> n= 20 then
-	select count(1) from pdn1 t1 &
-	  where isnull(t1.u_M_Consignment,'N')='Y' and t1.docentry=<basedocentry> and t1.linenum=<baselinenum>
-	if <wert1> n= 1 then
-		select owhs.whscode &
-		from owhs,oitw &
-		where owhs.whscode=oitw.whscode and oitw.itemcode='<itemcode>' &
-		and owhs.dropship<>'Y' and owhs.locked<>'Y' and oitw.locked<>'Y' &
-		and isnull(owhs.u_beas_lck,'') = 'Y' and owhs.whscode<>'<whscode>' &
-		and owhs.u_M_ConsiVendor=N'<dw_1.item.cardcode.value>'
+	select isnull(u_m_warehousecost,3), u_m_consivendor into l_whcost, l_consivendor &
+	 	from owhs &
+		where whscode=N'<whscode>'
+	if <l_whcost> n= 1 then
+		select whscode from owhs &
+			where isnull(u_m_warehousecost,3)=1 &
+			and u_m_consivendor = N'<l_consivendor>' &
+			and isnull(u_beas_lck,'')='Y'
 		setitem=schlechtwhscode=<wert1>
-		//schlechtwhscode=protect=1
+	end if
+
+	if <l_whcost> n= 3 then
+		setitem=schlechtwhscode=920
 	end if
 end if
 end event
