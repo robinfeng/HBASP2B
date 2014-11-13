@@ -168,6 +168,8 @@ dw_1.item.u_gruppe.formatstring=errortext=This is direct material item&| the mat
 [automaticscript]
 dw_1.item.d_sn_comp_item.formatstring=errortext=Please enter s/n component item correctly.,
 [/automaticscript]
+item.sww.dropdown.activate
+item.sww.dropdown.select=oslp.SlpName, oslp.memo from oslp where oslp.slpcode<>-1
 end event
 
 // @eventid: beas_artikel_edit_update
