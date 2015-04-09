@@ -1,5 +1,0 @@
-﻿windowevent open
-//[automaticscript]
-//dw_1.item.tr2aplatz_t.formatstring=text=Proc.01 for Sched+Cap,
-//[/automaticscript]
-end event
