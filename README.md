@@ -47,5 +47,8 @@ d) 选中刚才编辑的 README.md，可以在右下角进行预览
 e) 点击“Commit”按钮
 f) 在 Commit message 文本框中输入备注：通过 SourceTree 提交README.md文档。
 g) 点击“Commit”按钮
+h) 查看 master 分支
+i. 在左边 BRANCHES 菜单的右边，点击 Show
+ii. 你可以看到 master 分支，以及你修改的历史和 README.md 文档
 ~~~~~~
 ### 5. 推送至 GitHub
