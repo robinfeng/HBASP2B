@@ -72,6 +72,11 @@
 3. 在 New Branch 文本框输入：Dev_1.0
 4. 点击 Create Branch 按钮
 5. 在 BRANCHES 下，会看到当前分支被自动切换至 Dev_1.0
+6. 参考 4. 提交至 master，将其提交至 GitHub
 
 ------
 
+## 8. 推送新的代码至 GitHub 的新建分支 Dev_1.0
+1. 菜单：Repository > Push...
+2. 勾选 Dev_1.0 分支，Remote branch 选择 Dev_1.0
+3. 点击 OK
