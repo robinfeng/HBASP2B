@@ -1,17 +1,14 @@
-Learn the Git on Mac OS X
-=======
-### 1. 在 Mac OS X 上安装 SourceTree
-=======
-~~~~~~
+# Learn the Git on Mac OS X
+## 1. 在 Mac OS X 上安装 SourceTree
 a) 打开 App Store
 b) 搜索 SourceTree
 c) 点击“获取”进行安装
-~~~~~~
 
-### 2. 在 SourceTree 创建一个代码库 Repository
-=======
-#### (1) 设置 GitHub 账号
-~~~~~~
+------
+
+## 2. 在 SourceTree 创建一个代码库 Repository
+### (1) 设置 GitHub 账号
+
 a) 打开 SourceTree
 b) 确定 Bookmarks 窗口已打开，菜单：View > Show Bookmarks
 c) 右键菜单：New > Repository...
@@ -29,17 +26,17 @@ i) 点击“Close”，你会看到你在GitHub中创建的项目
 j) 选中相应的项目，点击“Create New Repository”
 k) 指定Destination Path至本地工作路径
 l) 点击“Clone”
-~~~~~~
-### 3. 编辑本文档
-=======
-~~~~~~
+
+------
+
+## 3. 编辑本文档
 a) 确定 Bookmarks 窗口已打开，菜单：View > Show Bookmarks
 b) 在刚才创建的代码库上点击右键菜单：Show in Finder
 c) 编辑README.md，为了方便预览，我用 Mou 来编辑 MD 文档。
-~~~~~~
-### 4. 提交至 master 
-=======
-~~~~~~
+
+------
+
+## 4. 提交至 master 
 a) 确定 Bookmarks 窗口已打开，菜单：View > Show Bookmarks
 b) 在刚才创建的代码库上点击右键菜单：Open
 c) 切换至 Log View，菜单 View > Log View
@@ -50,5 +47,11 @@ g) 点击“Commit”按钮
 h) 查看 master 分支
 i. 在左边 BRANCHES 菜单的右边，点击 Show
 ii. 你可以看到 master 分支，以及你修改的历史和 README.md 文档
-~~~~~~
-### 5. 推送至 GitHub
+
+------
+
+## 5. 推送至 GitHub
+a) 点击 Push 图标，或者使用菜单 Repository > Push...
+b) 确认选择 origin 代码库
+c) 勾选 master 分支
+d) 点击 OK 按钮
