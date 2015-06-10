@@ -62,3 +62,16 @@
 1. 菜单：View > Show Hosted Repositories
 2. 选择此项目 LearnGit，点击右键
 3. 点击 Open in Browser...
+4. 检查最新的更新已经发布至 GitHub
+
+------
+
+## 7. 创建新的分支
+1. 菜单：Repository > Branch...
+2. 点击 New Branch 按钮
+3. 在 New Branch 文本框输入：Dev_1.0
+4. 点击 Create Branch 按钮
+5. 在 BRANCHES 下，会看到当前分支被自动切换至 Dev_1.0
+
+------
+
