@@ -75,8 +75,12 @@
 6. 参考 4. 提交至 master，将其提交至 GitHub
 
 ------
+## 8. 为新分支创建一个新的文档
+1. 参考第 3 小节，创建一个新的文档 Dev 1.0.md
+2. 将此文件 Add 并 Commit
 
-## 8. 推送新的代码至 GitHub 的新建分支 Dev_1.0
+## 9. 推送新的代码至 GitHub 的新建分支 Dev_1.0
 1. 菜单：Repository > Push...
 2. 勾选 Dev_1.0 分支，Remote branch 选择 Dev_1.0
 3. 点击 OK
+
