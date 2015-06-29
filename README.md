@@ -81,6 +81,6 @@
 
 ## 9. 推送新的代码至 GitHub 的新建分支 Dev_1.0
 1. 菜单：Repository > Push...
-2. 勾选 Dev_1.0 分支，Remote branch 选择 Dev_1.0
+2. 在 Dev_1.0 分支这行，勾选 Push 和 Track，并确保 Remote branch 选择了 Dev_1.0
 3. 点击 OK
 
