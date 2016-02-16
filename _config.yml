@@ -2,3 +2,5 @@ auto: true
 # for github pages OR jekyll serve
 baseurl: /LearnGit
 # baseurl: /
+gems:
+  - jekyll-sitemap
