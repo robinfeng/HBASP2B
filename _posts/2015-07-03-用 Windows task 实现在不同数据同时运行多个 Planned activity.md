@@ -1,3 +1,6 @@
+---
+---
+
 ## 用 Windows task 实现在不同数据同时运行多个 Planned activity
 
 参考：http://portal.beascloud.com/docs/help/online_eng/，Concenpts>Tasks
@@ -10,7 +13,10 @@ DB_1:
 	* Execution:
 
 ```
-#sqlupdate oitm set frgnname='CM00'where itemcode='CM00'#end
+#sql
+update oitm set frgnname='CM00'
+where itemcode='CM00'
+#end
 ```
 DB_2:
 
@@ -20,7 +26,10 @@ DB_2:
 	* Execution:
 
 ```
-#sqlupdate oitm set frgnname='CM11'where itemcode='CM11'#end
+#sql
+update oitm set frgnname='CM11'
+where itemcode='CM11'
+#end
 ```
 
 Windows Task:
